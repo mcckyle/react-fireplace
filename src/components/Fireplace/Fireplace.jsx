@@ -1,10 +1,11 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 25 December 2025
+//Date: 27 December 2025
 //Description: This file contains the parent component for the React Fireplace project.
 
 import { useEffect, useRef, useState } from "react";
 import HeatRefraction from "../HeatRefraction/HeatRefraction.jsx";
+import crackleSound from "../public/audio/fireplace-crackle.mp3";
 import "./Fireplace.css";
 
 const EMBER_COUNT = 18;
@@ -179,7 +180,7 @@ function Fireplace() {
     <div className="room">
       <audio
         ref={audioRef}
-        src="/audio/fireplace-crackle.mp3"
+        src={crackleSound}
         loop
         preload="auto"
       />
