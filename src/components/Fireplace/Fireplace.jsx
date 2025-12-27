@@ -5,7 +5,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import HeatRefraction from "../HeatRefraction/HeatRefraction.jsx";
-import crackleSound from "../public/audio/fireplace-crackle.mp3";
 import "./Fireplace.css";
 
 const EMBER_COUNT = 18;
@@ -180,7 +179,7 @@ function Fireplace() {
     <div className="room">
       <audio
         ref={audioRef}
-        src={crackleSound}
+        src="/react-fireplace/audio/fireplace-crackle.mp3"
         loop
         preload="auto"
       />
