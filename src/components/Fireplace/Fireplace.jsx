@@ -7,9 +7,9 @@ import { useEffect, useRef, useState } from "react";
 import HeatRefraction from "../HeatRefraction/HeatRefraction.jsx";
 import "./Fireplace.css";
 
-const EMBER_COUNT = 18;
+const EMBER_COUNT = 20;
 
-function FlameRow({ count, intensity, blur = 0 }) {
+function FlameRow({ count, intensity, blur = 0, zIndex = 1 }) {
   const [flameCount, setFlameCount] = useState(
     Math.min(30, Math.floor(window.innerWidth / 90))
   );
@@ -22,7 +22,7 @@ function FlameRow({ count, intensity, blur = 0 }) {
   }, []);
 
     return (
-        <div className="flame-row" style={{ '--row-blur': `${blur}px`}}>
+        <div className="flame-row" style={{ '--row-blur': `${blur}px`, zIndex }}>
           {Array.from({ length: count }).map((_, i) => (
             <span
               key={i}
@@ -30,7 +30,7 @@ function FlameRow({ count, intensity, blur = 0 }) {
               style={{
                 "--delay": `${Math.random() * 2}s`,
                 "--scale": (0.85 + Math.random() * 0.4).toFixed(2),
-                "--drift": `${(Math.random() * 10 - 5).toFixed(1)}px`,
+                "--drift": `${(Math.random() * 8 - 4).toFixed(1)}px`,
                 "--flare": Math.random() > 0.75 ? 1 : 0,
                 "--intensity": intensity.toFixed(2),
                 "--heat": (0.7 + Math.random() * 0.6).toFixed(2),
@@ -51,11 +51,11 @@ function EmberLayer() {
               key={i}
               className="ember"
               style={{
-                "--x": `${(base + Math.random() * 6 - 3).toFixed(1)}%`,
-                "--delay": `${(Math.random() * 12).toFixed(1)}s`,
-                "--rise": `${(12 + Math.random() * 18).toFixed(1)}px`,
-                "--size": `${(1.2 + Math.random() * 1.6).toFixed(2)}px`,
-                "--drift": `${(Math.random() * 12 - 6).toFixed(1)}px`,
+                "--x": `${(Math.random() * 100).toFixed(1)}%`,
+                "--delay": `${(Math.random() * 10).toFixed(1)}s`,
+                "--rise": `${(12 + Math.random() * 20).toFixed(1)}px`,
+                "--size": `${(1.5 + Math.random() * 2).toFixed(2)}px`,
+                "--drift": `${(Math.random() * 10 - 5).toFixed(1)}px`,
                 "--cluster": Math.random() > 0.7 ? 1.6 : 1,
               }}
             />
@@ -107,47 +107,16 @@ function Fireplace() {
   }, []);
 
   useEffect(() => {
-    if ( ( ! audioRef.current) || ( ! soundOn))
-    {
-      return;
-    }
-
-    const interval = setInterval(() => {
-      audioRef.current.volume = 0.25 + Math.random() * 0.15;
-    }, 9000);
-
-    return () => clearInterval(interval);
-  }, [soundOn]);
-
-  useEffect(() => {
-    if ( ( ! audioRef.current) || ( ! soundOn))
-    {
-      return;
-    }
-    const t = setInterval(() => {
-      audioRef.current.playbackRate = 0.96 + Math.random() * 0.08;
-    }, 14000);
-    return () => clearInterval(t);
-  }, [soundOn]);
-
-  useEffect(() => {
       const audio = audioRef.current;
-      if ( ! audio)
+      if ( ( ! audio) || ( ! soundOn))
       {
           return;
       }
 
       audio.volume = 0;
 
-      if (soundOn)
-      {
-          audio.play().catch(() => {});
-          fadeAudio(audio, 0.35);
-      }
-      else
-      {
-          fadeAudio(audio, 0, () => audio.pause());
-      }
+      audio.play().catch(() => {});
+      fadeAudio(audio, 0.35);
 
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
           setSoundOn(false);
@@ -201,9 +170,9 @@ function Fireplace() {
           <div className="glow" />
           <EmberLayer />
           <div className="logs" />
-          <FlameRow count={5} intensity={intensity} />
-          <FlameRow count={10} intensity={intensity} />
-          <FlameRow count={15} intensity={intensity} />
+          <FlameRow count={5} intensity={intensity} blur={8} zIndex={1} />
+          <FlameRow count={10} intensity={intensity} blur={4} zIndex={2} />
+          <FlameRow count={15} intensity={intensity} blur={0} zIndex={3} />
         </div>
 
         <div className="hearth" />
@@ -211,7 +180,7 @@ function Fireplace() {
     </div>
   );
 
-  function fadeAudio(audio, target, onDone) {
+  const fadeAudio = (audio, target, onDone) => {
       const step = target > audio.volume ? 0.01 : -0.01;
       const interval = setInterval(() => {
           audio.volume = Math.min(1, Math.max(0, audio.volume + step));
