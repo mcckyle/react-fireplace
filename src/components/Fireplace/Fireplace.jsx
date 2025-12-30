@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 27 December 2025
+//Date: 29 December 2025
 //Description: This file contains the parent component for the React Fireplace project.
 
 import { useEffect, useRef, useState } from "react";
@@ -9,7 +9,7 @@ import "./Fireplace.css";
 
 const EMBER_COUNT = 18;
 
-function FlameRow({ className, intensity }) {
+function FlameRow({ count, intensity, blur = 0 }) {
   const [flameCount, setFlameCount] = useState(
     Math.min(30, Math.floor(window.innerWidth / 90))
   );
@@ -22,8 +22,8 @@ function FlameRow({ className, intensity }) {
   }, []);
 
     return (
-        <div className={`flame-row ${className}`}>
-          {Array.from({ length: flameCount }).map((_, i) => (
+        <div className="flame-row" style={{ '--row-blur': `${blur}px`}}>
+          {Array.from({ length: count }).map((_, i) => (
             <span
               key={i}
               className="flame"
@@ -201,9 +201,9 @@ function Fireplace() {
           <div className="glow" />
           <EmberLayer />
           <div className="logs" />
-          <FlameRow className="back" intensity={intensity} />
-          <FlameRow className="mid" intensity={intensity} />
-          <FlameRow className="front" intensity={intensity} />
+          <FlameRow count={5} intensity={intensity} />
+          <FlameRow count={10} intensity={intensity} />
+          <FlameRow count={15} intensity={intensity} />
         </div>
 
         <div className="hearth" />
