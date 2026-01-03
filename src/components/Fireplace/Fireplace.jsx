@@ -85,7 +85,7 @@ function Fireplace() {
     const pick = () => (target = 0.92 + Math.random() * 0.2);
     pick();
 
-    const targetTimer = setInterval(pickTarget, 16000);
+    const targetTimer = setInterval(pick, 16000);
 
     const smooth = setInterval(
       () => setIntensity(value => value + (target - value) * 0.015),
