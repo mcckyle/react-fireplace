@@ -1,6 +1,6 @@
 //Filename: HeatRefraction.jsx
 //Author: Kyle McColgan
-//Date: 25 December 2025
+//Date: 31 December 2025
 //Description: This file contains the WebGL component for the React Fireplace project.
 
 import { useEffect, useRef } from "react";
@@ -61,7 +61,7 @@ export default function HeatRefraction() {
                   vec2 uv = gl_FragCoord.xy / uResolution;
 
                   //Vertical heat falloff.
-                  float height = smoothstep(0.2, 0.9, uv.y);
+                  float height = smoothstep(0.15, 0.9, uv.y);
 
                   //Animated turbulence.
                   float t = uTime * 0.6;
@@ -69,7 +69,7 @@ export default function HeatRefraction() {
                     noise(uv * 18.0 + vec2(0.0, t)) +
                     noise(uv * 36.0 - vec2(t * 0.7, 0.0)) * 0.5;
 
-                  float distortion = n * 0.015 * height;
+                  float distortion = n * 0.02 * height * height;
 
                   vec2 offset = vec2(
                       distortion,

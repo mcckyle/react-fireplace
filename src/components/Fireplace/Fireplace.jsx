@@ -1,40 +1,38 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 29 December 2025
+//Date: 2 January 2026
 //Description: This file contains the parent component for the React Fireplace project.
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import HeatRefraction from "../HeatRefraction/HeatRefraction.jsx";
 import "./Fireplace.css";
 
-const EMBER_COUNT = 20;
+const EMBER_COUNT = 18;
 
 function FlameRow({ count, intensity, blur = 0, zIndex = 1 }) {
-  const [flameCount, setFlameCount] = useState(
-    Math.min(30, Math.floor(window.innerWidth / 90))
-  );
-
-  useEffect(() => {
-    const onResize = () =>
-    setFlameCount(Math.min(30, Math.floor(window.innerWidth / 90)));
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
+  const flames = useMemo(
+   () =>
+     Array.from({ length: count }).map(() => ({
+        scale: (0.9 + Math.random() * 0.3).toFixed(2),
+        drift: `${(Math.random() * 6 - 3).toFixed(1)}px`,
+        heat: (0.75 + Math.random() * 0.5).toFixed(2),
+        flare: Math.random() > 0.8 ? 1 : 0,
+      })),
+     [count]
+    );
 
     return (
         <div className="flame-row" style={{ '--row-blur': `${blur}px`, zIndex }}>
-          {Array.from({ length: count }).map((_, i) => (
+          {flames.map((flame, index) => (
             <span
-              key={i}
+              key={index}
               className="flame"
               style={{
-                "--delay": `${Math.random() * 2}s`,
-                "--scale": (0.85 + Math.random() * 0.4).toFixed(2),
-                "--drift": `${(Math.random() * 8 - 4).toFixed(1)}px`,
-                "--flare": Math.random() > 0.75 ? 1 : 0,
-                "--intensity": intensity.toFixed(2),
-                "--heat": (0.7 + Math.random() * 0.6).toFixed(2),
-                "--burst": intensity > 1.05 && Math.random() > 0.85 ? 1 : 0,
+                "--scale": flame.scale,
+                "--drift": flame.drift,
+                "--heat": flame.heat,
+                "--flare": flame.flare,
+                "--intensity": intensity.toFixed(3),
               }}
             />
           ))}
@@ -43,104 +41,126 @@ function FlameRow({ count, intensity, blur = 0, zIndex = 1 }) {
 }
 
 function EmberLayer() {
-    const base = [30, 45, 60, 72][Math.floor(Math.random() * 4)];
-    return (
-        <div className="embers">
-          {Array.from({ length: EMBER_COUNT }).map((_, i) => (
-            <span
-              key={i}
-              className="ember"
-              style={{
-                "--x": `${(Math.random() * 100).toFixed(1)}%`,
-                "--delay": `${(Math.random() * 10).toFixed(1)}s`,
-                "--rise": `${(12 + Math.random() * 20).toFixed(1)}px`,
-                "--size": `${(1.5 + Math.random() * 2).toFixed(2)}px`,
-                "--drift": `${(Math.random() * 10 - 5).toFixed(1)}px`,
-                "--cluster": Math.random() > 0.7 ? 1.6 : 1,
-              }}
-            />
-          ))}
-        </div>
+    const embers = useMemo(
+      () =>
+        Array.from({ length: EMBER_COUNT }).map(() => ({
+          x: `${(Math.random() * 100).toFixed(1)}%`,
+          delay: `${(Math.random() * 12).toFixed(1)}s`,
+          rise: `${(14 + Math.random() * 18).toFixed(1)}px`,
+          size: `${(1.6 + Math.random() * 1.8).toFixed(2)}px`,
+          drift: `${(Math.random() * 8 - 4).toFixed(1)}px`,
+          cluster: Math.random() > 0.75 ? 1.5 : 1,
+        })),
+      []
     );
-}
 
-//Ultra-light 1D smooth noise (Perlin-like).
-function smoothNoise(t) {
-  return (
-    Math.sin(t) * 0.6 +
-    Math.sin(t * 0.37 + 1.7) * 0.3 +
-    Math.sin(t * 0.13 + 4.2) * 0.1
-  );
+    return (
+      <div className="embers">
+        {embers.map((e, i) => (
+          <span
+            key={i}
+            className="ember"
+            style={{
+              "--x": e.x,
+              "--delay": e.delay,
+              "--rise": e.rise,
+              "--size": e.size,
+              "--drift": e.drift,
+              "--cluster": e.cluster,
+            }}
+          />
+        ))}
+      </div>
+    );
 }
 
 function Fireplace() {
   const audioRef = useRef(null);
-  const noiseTime = useRef(0);
   const [soundOn, setSoundOn] = useState(false);
   const [intensity, setIntensity] = useState(1);
 
+  /* Flame Breathing. */
   useEffect(() => {
-    let raf;
-    const tick = () => {
-      noiseTime.current += 0.0025;
+    let target = 1;
+    const pick = () => (target = 0.92 + Math.random() * 0.2);
+    pick();
 
-      const n = smoothNoise(noiseTime.current);
-      const root = document.documentElement;
+    const targetTimer = setInterval(pickTarget, 16000);
 
-      root.style.setProperty("--noise-drift", (n * 6).toFixed(3));
-      root.style.setProperty("--noise-breathe", (0.5 + n * 0.15).toFixed(3));
-      root.style.setProperty("--noise-flare", (0.5 + n * 0.5).toFixed(3));
-      root.style.setProperty("--convection", (n * 2.5).toFixed(3));
+    const smooth = setInterval(
+      () => setIntensity(value => value + (target - value) * 0.015),
+      100
+    );
 
-      raf = requestAnimationFrame(tick);
-    };
-
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    return () => { clearInterval(targetTimer); clearInterval(smooth); }
   }, []);
 
   useEffect(() => {
+    document.documentElement.style.setProperty(
+      "--intensity",
+      intensity.toFixed(3)
+    );
+  }, [intensity]);
+
+  const fadeAudio = (audio, target, onDone) => {
+    const step = target > audio.volume ? 0.01 : -0.01;
     const interval = setInterval(() => {
-      setIntensity(0.9 + Math.random() * 0.25);
-    }, 12000);
-    return () => clearInterval(interval);
-  }, []);
+      audio.volume = Math.min(1, Math.max(0, audio.volume + step));
+      if (
+        (step > 0 && audio.volume >= target) ||
+        (step < 0 && audio.volume <= target)
+      ) {
+        clearInterval(interval);
+        onDone?.();
+      }
+    }, 30);
+  }
 
+  /* Audio Effects. */
   useEffect(() => {
       const audio = audioRef.current;
-      if ( ( ! audio) || ( ! soundOn))
+      if ( ! audio)
       {
           return;
       }
 
-      audio.volume = 0;
-
-      audio.play().catch(() => {});
-      fadeAudio(audio, 0.35);
-
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-          setSoundOn(false);
+      if ( ! soundOn)
+      {
+        audio.volume = 0;
+        audio.pause();
+        return;
       }
-  }, [soundOn]);
 
+      audio.volume = 0;
+      audio.play().catch(() => {});
+      const fade = setInterval(() => {
+        audio.volume = Math.min(0.32, audio.volume + 0.01);
+        if (audio.volume >= 0.32)
+        {
+          clearInterval(fade);
+        }
+      }, 40);
+
+      return () => clearInterval(fade);
+    }, [soundOn]);
+
+  /* Night Warmth Effects. */
   useEffect(() => {
-    const updateNightWarmth = () => {
+    const update = () => {
       const hour = new Date().getHours();
 
       //Normalize: 18 -> 0 (early evening), 2 -> 1 (deep night).
       let t = (hour >= 18 ? hour : hour + 24) - 18;
       t = Math.min(Math.max(t / 8, 0), 1);
-
-      //Ease it (slow, natural).
       const eased = t * t * (3 - 2 * t);
 
       const root = document.documentElement;
-      root.style.setProperty("--night", eased.toFixed(3));
-      root.style.setProperty("--night-inv", (1 - eased).toFixed(3));
+      document.documentElement.style.setProperty("--night", eased.toFixed(3));
+      document.documentElement.style.setProperty("--night-inv", (1 - eased).toFixed(3));
     };
 
-    updateNightWarmth();
-    const i = setInterval(updateNightWarmth, 5 * 60 * 1000);
+    update();
+    const i = setInterval(update, 5 * 60 * 1000);
     return () => clearInterval(i);
   }, []);
 
@@ -157,7 +177,6 @@ function Fireplace() {
         className="sound-toggle"
         onClick={() => setSoundOn(v => !v)}
         aria-label="Toggle fireplace sound"
-        title="Ambient fireplace sound"
       >
         {soundOn ? "ON" : "OFF"}
       </button>
@@ -170,29 +189,16 @@ function Fireplace() {
           <div className="glow" />
           <EmberLayer />
           <div className="logs" />
-          <FlameRow count={5} intensity={intensity} blur={8} zIndex={1} />
-          <FlameRow count={10} intensity={intensity} blur={4} zIndex={2} />
-          <FlameRow count={15} intensity={intensity} blur={0} zIndex={3} />
+
+          <FlameRow count={4} intensity={intensity} blur={10} zIndex={1} />
+          <FlameRow count={9} intensity={intensity} blur={4} zIndex={2} />
+          <FlameRow count={14} intensity={intensity} blur={0} zIndex={3} />
         </div>
 
         <div className="hearth" />
       </div>
     </div>
   );
-
-  const fadeAudio = (audio, target, onDone) => {
-      const step = target > audio.volume ? 0.01 : -0.01;
-      const interval = setInterval(() => {
-          audio.volume = Math.min(1, Math.max(0, audio.volume + step));
-          if (
-            (step > 0 && audio.volume >= target) ||
-            (step < 0 && audio.volume <= target)
-          ) {
-              clearInterval(interval);
-              onDone?.();
-          }
-    }, 30);
-  }
 }
 
 export default Fireplace;
