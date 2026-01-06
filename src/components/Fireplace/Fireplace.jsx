@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 2 January 2026
+//Date: 5 January 2026
 //Description: This file contains the parent component for the React Fireplace project.
 
 import { useEffect, useRef, useState, useMemo } from "react";
@@ -9,20 +9,21 @@ import "./Fireplace.css";
 
 const EMBER_COUNT = 18;
 
-function FlameRow({ count, intensity, blur = 0, zIndex = 1 }) {
+function FlameRow({ count, intensity, blur = 0, zIndex = 1, phase = 0 }) {
   const flames = useMemo(
    () =>
      Array.from({ length: count }).map(() => ({
-        scale: (0.9 + Math.random() * 0.3).toFixed(2),
-        drift: `${(Math.random() * 6 - 3).toFixed(1)}px`,
-        heat: (0.75 + Math.random() * 0.5).toFixed(2),
-        flare: Math.random() > 0.8 ? 1 : 0,
+        scale: (0.85 + Math.random() * 0.4).toFixed(2),
+        drift: `${(Math.random() * 10 - 5).toFixed(1)}px`,
+        heat: (0.7 + Math.random() * 0.6).toFixed(2),
+        flare: Math.random() > 0.78 ? 1 : 0,
+        delay: `${(-Math.random() * 4 + phase).toFixed(2)}s`,
       })),
-     [count]
-    );
+     [count, phase]
+   );
 
     return (
-        <div className="flame-row" style={{ '--row-blur': `${blur}px`, zIndex }}>
+        <div className="flame-row" style={{ '--row-blur': blur, zIndex }}>
           {flames.map((flame, index) => (
             <span
               key={index}
@@ -32,6 +33,7 @@ function FlameRow({ count, intensity, blur = 0, zIndex = 1 }) {
                 "--drift": flame.drift,
                 "--heat": flame.heat,
                 "--flare": flame.flare,
+                "--delay": flame.delay,
                 "--intensity": intensity.toFixed(3),
               }}
             />
@@ -190,9 +192,9 @@ function Fireplace() {
           <EmberLayer />
           <div className="logs" />
 
-          <FlameRow count={4} intensity={intensity} blur={10} zIndex={1} />
-          <FlameRow count={9} intensity={intensity} blur={4} zIndex={2} />
-          <FlameRow count={14} intensity={intensity} blur={0} zIndex={3} />
+          <FlameRow count={4} intensity={intensity} blur={12} zIndex={1} phase={0} />
+          <FlameRow count={9} intensity={intensity} blur={6} zIndex={2} phase={-1.2} />
+          <FlameRow count={14} intensity={intensity} blur={0} zIndex={3} phase={-2.4} />
         </div>
 
         <div className="hearth" />
