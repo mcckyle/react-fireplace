@@ -1,6 +1,6 @@
 //Filename: HeatRefraction.jsx
 //Author: Kyle McColgan
-//Date: 31 December 2025
+//Date: 8 January 2026
 //Description: This file contains the WebGL component for the React Fireplace project.
 
 import { useEffect, useRef } from "react";
@@ -17,11 +17,13 @@ export default function HeatRefraction() {
             return;
         }
 
+        /* Scene Setup. */
         const scene = new THREE.Scene();
         const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
         const renderer = new THREE.WebGLRenderer({
             alpha: true,
+            antialias: false,
             powerPreference: "high-performance",
         });
 
@@ -29,6 +31,7 @@ export default function HeatRefraction() {
         renderer.setSize(container.clientWidth, container.clientHeight);
         container.appendChild(renderer.domElement);
 
+        /* Uniforms. */
         const uniforms = {
             uTime: { value: 0 },
             uResolution: {
@@ -39,8 +42,10 @@ export default function HeatRefraction() {
             },
         };
 
+        /* Material. */
         const material = new THREE.ShaderMaterial({
             transparent: true,
+            depthWrite: false,
             uniforms,
             vertexShader: `
               void main() {
@@ -53,32 +58,54 @@ export default function HeatRefraction() {
               uniform float uTime;
               uniform vec2 uResolution;
 
+              // Hash + value noise...
+              float hash(vec2 p) {
+                  p = fract(p * vec2(123.34, 456.21));
+                  p += dot(p, p + 45,32);
+                  return fract(p.x * p.y);
+              }
+
               float noise(vec2 p) {
-                  return sin(p.x) * sin(p.y);
+                  vec2 i = floor(p);
+                  vec2 f = fract(p);
+
+                  float a = hash(i);
+                  float b = hash(i + vec2(1.0, 0.0));
+                  float c = hash(i + vec2(0.0, 1.0));
+                  float d = hash(i + vec2(1.0, 1.0));
+
+                  vec2 u = f * f * (3.0 - 2.0 * f);
+                  return mix(a, b, u.x) +
+                         (c - a) * u.y * (1.0 - u.x) +
+                         (d - b) * u.x * u.y;
               }
 
               void main() {
                   vec2 uv = gl_FragCoord.xy / uResolution;
 
-                  //Vertical heat falloff.
-                  float height = smoothstep(0.15, 0.9, uv.y);
+                  /* Heat Strength by Height. */
+                  float base = smoothstep(0.05, 0.4, uv.y);
+                  float fade = 1.0 - smoothstep(0.55, 0.95, uv.y);
+                  float heightMask = base * fade;
 
-                  //Animated turbulence.
-                  float t = uTime * 0.6;
-                  float n =
-                    noise(uv * 18.0 + vec2(0.0, t)) +
-                    noise(uv * 36.0 - vec2(t * 0.7, 0.0)) * 0.5;
+                  /* Slow, Upward Convection. */
+                  float t = uTime * 0.12;
+                  vec2 flow = vec2(0.0, -t);
 
-                  float distortion = n * 0.02 * height * height;
+                  float n1 = noise(uv * 14.0 + flow);
+                  float n2 = noise(uv * 28.0 - flow * 1.3);
 
+                  float distortion = (n1 * 0.6 + n2 * 0.4 - 0.5);
+
+                  /* Vertical Bias (Heat Rises). */
                   vec2 offset = vec2(
-                      distortion,
-                      distortion * 1.6
-                  );
+                      distortion * 0.015,
+                      distortion * 0.035
+                  ) * heightMask;
 
-                  //Fake refraction via screen-space offset.
-                  gl_FragColor = vec4(1.0, 1.0, 1.0, 0.08 * height);
-                  gl_FragColor.a += abs(distortion) * 4.0;
+                  /* Invisible Refraction Layer. */
+                  float alpha = abs(distortion) * heightMask * 0.22;
+                  gl_FragColor = vec4(1.0, 1.0, 1.0, alpha);
               }
             `,
         });
@@ -90,6 +117,7 @@ export default function HeatRefraction() {
 
         scene.add(quad);
 
+        /* Animation. */
         let raf;
         const animate = () => {
             uniforms.uTime.value += 0.016;
@@ -99,12 +127,12 @@ export default function HeatRefraction() {
 
         animate();
 
+        /* Resize. */
         const onResize = () => {
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            uniforms.uResolution.value.set(
-                container.clientWidth,
-                container.clientHeight
-            );
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            renderer.setSize(w, h);
+            uniforms.uResolution.value.set(w, h);
         };
 
         window.addEventListener("resize", onResize);

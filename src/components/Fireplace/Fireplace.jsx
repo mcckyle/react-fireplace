@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 5 January 2026
+//Date: 8 January 2026
 //Description: This file contains the parent component for the React Fireplace project.
 
 import { useEffect, useRef, useState, useMemo } from "react";
@@ -84,17 +84,23 @@ function Fireplace() {
   /* Flame Breathing. */
   useEffect(() => {
     let target = 1;
-    const pick = () => (target = 0.92 + Math.random() * 0.2);
+    let velocity = 0;
+    const pick = () => {
+      target = 0.9 + Math.random() * 0.25;
+    };
+
     pick();
+    const targetTimer = setInterval(pick, 22000);
 
-    const targetTimer = setInterval(pick, 16000);
+    const tick = setInterval(() => {
+      setIntensity(current => {
+        const force = (target - current) * 0.02;
+        velocity = velocity * 0.85 + force;
+        return current + velocity;
+      });
+    }, 120);
 
-    const smooth = setInterval(
-      () => setIntensity(value => value + (target - value) * 0.015),
-      100
-    );
-
-    return () => { clearInterval(targetTimer); clearInterval(smooth); }
+    return () => { clearInterval(targetTimer); clearInterval(tick); }
   }, []);
 
   useEffect(() => {
@@ -128,22 +134,13 @@ function Fireplace() {
 
       if ( ! soundOn)
       {
-        audio.volume = 0;
-        audio.pause();
+        fadeAudio(audio, 0, () => audio.pause());
         return;
       }
 
       audio.volume = 0;
       audio.play().catch(() => {});
-      const fade = setInterval(() => {
-        audio.volume = Math.min(0.32, audio.volume + 0.01);
-        if (audio.volume >= 0.32)
-        {
-          clearInterval(fade);
-        }
-      }, 40);
-
-      return () => clearInterval(fade);
+      fadeAudio(audio, 0.32);
     }, [soundOn]);
 
   /* Night Warmth Effects. */
