@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 8 January 2026
+//Date: 9 January 2026
 //Description: This file contains the parent component for the React Fireplace project.
 
 import { useEffect, useRef, useState, useMemo } from "react";
@@ -90,7 +90,7 @@ function Fireplace() {
     };
 
     pick();
-    const targetTimer = setInterval(pick, 22000);
+    const targetTimer = setInterval(pick, 28000);
 
     const tick = setInterval(() => {
       setIntensity(current => {
@@ -98,7 +98,7 @@ function Fireplace() {
         velocity = velocity * 0.85 + force;
         return current + velocity;
       });
-    }, 120);
+    }, 160);
 
     return () => { clearInterval(targetTimer); clearInterval(tick); }
   }, []);
@@ -111,17 +111,19 @@ function Fireplace() {
   }, [intensity]);
 
   const fadeAudio = (audio, target, onDone) => {
-    const step = target > audio.volume ? 0.01 : -0.01;
+    const step = target > audio.volume ? 0.008 : -0.01;
+
     const interval = setInterval(() => {
-      audio.volume = Math.min(1, Math.max(0, audio.volume + step));
+      const next = audio.volume + step;
+      audio.volume = Math.min(1, Math.max(0, next));
       if (
-        (step > 0 && audio.volume >= target) ||
-        (step < 0 && audio.volume <= target)
+        ( (step > 0) && (audio.volume >= target) ) ||
+        ( (step < 0) && (audio.volume <= target) )
       ) {
         clearInterval(interval);
         onDone?.();
       }
-    }, 30);
+    }, 40);
   }
 
   /* Audio Effects. */
@@ -189,9 +191,9 @@ function Fireplace() {
           <EmberLayer />
           <div className="logs" />
 
-          <FlameRow count={4} intensity={intensity} blur={12} zIndex={1} phase={0} />
-          <FlameRow count={9} intensity={intensity} blur={6} zIndex={2} phase={-1.2} />
-          <FlameRow count={14} intensity={intensity} blur={0} zIndex={3} phase={-2.4} />
+          <FlameRow count={4} intensity={intensity * 0.85} blur={14} zIndex={1} phase={0} />
+          <FlameRow count={9} intensity={intensity * 1.0} blur={7} zIndex={2} phase={-1.2} />
+          <FlameRow count={14} intensity={intensity * 1.1} blur={0} zIndex={3} phase={-2.4} />
         </div>
 
         <div className="hearth" />
