@@ -6,8 +6,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#000000" />
     <title>Fireplace</title>
+    <meta
+      name="description"
+      content="A simple, modern fireplace built with React and Vite."
+    />
+
+    <!-- Open Graph Meta. -->
+    <meta property="og:title" content="Fireplace" />
+    <meta property="og:description" content="A simple, modern fireplace built with React and Vite." />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Prevent White Flash Before CSS Loads. -->
+    <style>
+      html { background: #000; }
+    </style>
   </head>
   <body>
+    <noscript>
+      <p style="text-align: center; padding: 2rem;">
+        This Fireplace requires JavaScript to run!
+      </p>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

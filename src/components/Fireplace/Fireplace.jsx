@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 9 January 2026
+//Date: 12 January 2026
 //Description: This file contains the parent component for the React Fireplace project.
 
 import { useEffect, useRef, useState, useMemo } from "react";
@@ -12,15 +12,19 @@ const EMBER_COUNT = 18;
 function FlameRow({ count, intensity, blur = 0, zIndex = 1, phase = 0 }) {
   const flames = useMemo(
    () =>
-     Array.from({ length: count }).map(() => ({
-        scale: (0.85 + Math.random() * 0.4).toFixed(2),
+     Array.from({ length: count }).map((_, i) => {
+       const t = i / (count - 1);
+       const center = 1 - Math.abs(t - 0.5) * 2; //0 edges -> 1 center.
+       return {
+        scale: (0.8 + Math.random() * 0.3 + center * 0.15).toFixed(2),
         drift: `${(Math.random() * 10 - 5).toFixed(1)}px`,
-        heat: (0.7 + Math.random() * 0.6).toFixed(2),
+        heat: (0.65 + Math.random() * 0.5 + center * 0.25).toFixed(2),
         flare: Math.random() > 0.78 ? 1 : 0,
         delay: `${(-Math.random() * 4 + phase).toFixed(2)}s`,
-      })),
-     [count, phase]
-   );
+     };
+    }),
+   [count, phase]
+  );
 
     return (
         <div className="flame-row" style={{ '--row-blur': blur, zIndex }}>
@@ -134,15 +138,25 @@ function Fireplace() {
           return;
       }
 
+      const resume = () => {
+        if ( (soundOn) && (audio.paused) )
+        {
+          audio.play().catch(() => {});
+        }
+      };
+      document.addEventListener("visibilitychange", resume);
+
       if ( ! soundOn)
       {
         fadeAudio(audio, 0, () => audio.pause());
-        return;
+        return () => document.removeEventListener("visibilitychange", resume);
       }
 
       audio.volume = 0;
       audio.play().catch(() => {});
       fadeAudio(audio, 0.32);
+
+      return () => document.removeEventListener("visibilitychange", resume);
     }, [soundOn]);
 
   /* Night Warmth Effects. */
