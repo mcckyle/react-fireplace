@@ -6,10 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#000000" />
     <title>Fireplace</title>
-    <script type="module" crossorigin src="/react-fireplace/assets/index-C7lc00vm.js"></script>
-    <link rel="stylesheet" crossorigin href="/react-fireplace/assets/index-C3ykzO1b.css">
+    <meta
+      name="description"
+      content="A simple, modern fireplace built with React and Vite."
+    />
+
+    <!-- Open Graph Meta. -->
+    <meta property="og:title" content="Fireplace" />
+    <meta property="og:description" content="A simple, modern fireplace built with React and Vite." />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Prevent White Flash Before CSS Loads. -->
+    <style>
+      html { background: #000; }
+    </style>
+    <script type="module" crossorigin src="/react-fireplace/assets/index-BnGVZV5C.js"></script>
+    <link rel="stylesheet" crossorigin href="/react-fireplace/assets/index-DcgwHmcI.css">
   </head>
   <body>
+    <noscript>
+      <p style="text-align: center; padding: 2rem;">
+        This Fireplace requires JavaScript to run!
+      </p>
+    </noscript>
     <div id="root"></div>
   </body>
 </html>
