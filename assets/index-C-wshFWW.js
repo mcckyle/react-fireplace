@@ -4026,10 +4026,10 @@ void main() {
               uniform float uTime;
               uniform vec2 uResolution;
 
-              // Hash + value noise...
+              /* Hash + value noise. */
               float hash(vec2 p) {
-                  p = fract(p * vec2(123.34, 456.21));
-                  p += dot(p, p + 45,32);
+                  p = fract(p * vec2(127.1, 311.7));
+                  p += dot(p, p + 34.2);
                   return fract(p.x * p.y);
               }
 
@@ -4048,31 +4048,56 @@ void main() {
                          (d - b) * u.x * u.y;
               }
 
+              /* Fractal Brownian Motion. */
+              float fbm(vec2 p) {
+                float v = 0.0;
+                float a = 0.5;
+                for (int i = 0; i < 4; i ++)
+                {
+                    v += a * noise(p);
+                    p *= 2.0;
+                    a *= 0.5;
+                }
+                return v;
+              }
+
               void main() {
                   vec2 uv = gl_FragCoord.xy / uResolution;
 
-                  /* Heat Strength by Height. */
-                  float base = smoothstep(0.05, 0.4, uv.y);
-                  float fade = 1.0 - smoothstep(0.55, 0.95, uv.y);
-                  float heightMask = base * fade;
+                  /* Horizontal Center Weighting. */
+                  float center = 1.0 - abs(uv.x - 0.5) * 2.0;
+                  center = clamp(center, 0.0, 1.0);
 
-                  /* Slow, Upward Convection. */
-                  float t = uTime * 0.12;
-                  vec2 flow = vec2(0.0, -t);
+                  /* Vertical Heat Column. */
+                  float base = smoothstep(0.02, 0.35, uv.y);
+                  float topFade = 1.0 - smoothstep(0.6, 0.95, uv.y);
+                  float heightMask = base * topFade;
 
-                  float n1 = noise(uv * 14.0 + flow);
-                  float n2 = noise(uv * 28.0 - flow * 1.3);
+                  float heatMask = heightMask * center;
 
-                  float distortion = (n1 * 0.6 + n2 * 0.4 - 0.5);
+                  /* Time. */
+                  float t = uTime * 0.15;
 
-                  /* Vertical Bias (Heat Rises). */
+                  /* Convection Flow. */
+                  vec2 flow = vec2(
+                      fbm(uv * 4.0 + t) * 0.05,
+                      -t
+                  );
+
+                  /* Layered Turbulence. */
+                  float nLarge = fbm(uv * 0.6 + flow);
+                  float nSmall = fbm(uv * 18.0 - flow * 1.3);
+
+                  float distortion = (nLarge * 0.6 + nSmall * 0.4) - 0.5;
+
+                  /* Anisotropic Distortion (Heat Rises). */
                   vec2 offset = vec2(
-                      distortion * 0.015,
-                      distortion * 0.035
-                  ) * heightMask;
+                      distortion * 0.018,
+                      distortion * 0.045
+                  ) * heatMask;
 
-                  /* Invisible Refraction Layer. */
-                  float alpha = abs(distortion) * heightMask * 0.22;
+                  /* Alpha Controls Refraction Strength. */
+                  float alpha = abs(distortion) * heatMask * 0.25;
                   gl_FragColor = vec4(1.0, 1.0, 1.0, alpha);
               }
             `}),d=new Hi(new Yo(2,2),h);i.add(d);let m;const p=()=>{c.uTime.value+=.016,l.render(i,r),m=requestAnimationFrame(p)};p();const v=()=>{const _=e.clientWidth,S=e.clientHeight;l.setSize(_,S),c.uResolution.value.set(_,S)};return window.addEventListener("resize",v),()=>{cancelAnimationFrame(m),window.removeEventListener("resize",v),l.dispose(),e.removeChild(l.domElement)}},[]),$e.jsx("div",{ref:o,className:"heat-webgl","aria-hidden":!0})}const TA=18;function Ah({count:o,intensity:e,blur:i=0,zIndex:r=1,phase:l=0}){const c=fi.useMemo(()=>Array.from({length:o}).map((h,d)=>{const m=d/(o-1),p=1-Math.abs(m-.5)*2;return{scale:(.8+Math.random()*.3+p*.15).toFixed(2),drift:`${(Math.random()*10-5).toFixed(1)}px`,heat:(.65+Math.random()*.5+p*.25).toFixed(2),flare:Math.random()>.78?1:0,delay:`${(-Math.random()*4+l).toFixed(2)}s`}}),[o,l]);return $e.jsx("div",{className:"flame-row",style:{"--row-blur":i,zIndex:r},children:c.map((h,d)=>$e.jsx("span",{className:"flame",style:{"--scale":h.scale,"--drift":h.drift,"--heat":h.heat,"--flare":h.flare,"--delay":h.delay,"--intensity":e.toFixed(3)}},d))})}function bA(){const o=fi.useMemo(()=>Array.from({length:TA}).map(()=>({x:`${(Math.random()*100).toFixed(1)}%`,delay:`${(Math.random()*12).toFixed(1)}s`,rise:`${(14+Math.random()*18).toFixed(1)}px`,size:`${(1.6+Math.random()*1.8).toFixed(2)}px`,drift:`${(Math.random()*8-4).toFixed(1)}px`,cluster:Math.random()>.75?1.5:1})),[]);return $e.jsx("div",{className:"embers",children:o.map((e,i)=>$e.jsx("span",{className:"ember",style:{"--x":e.x,"--delay":e.delay,"--rise":e.rise,"--size":e.size,"--drift":e.drift,"--cluster":e.cluster}},i))})}function AA(){const o=fi.useRef(null),[e,i]=fi.useState(!1),[r,l]=fi.useState(1);fi.useEffect(()=>{let h=1,d=0;const m=()=>{h=.9+Math.random()*.25};m();const p=setInterval(m,28e3),v=setInterval(()=>{l(_=>{const S=(h-_)*.02;return d=d*.85+S,_+d})},160);return()=>{clearInterval(p),clearInterval(v)}},[]),fi.useEffect(()=>{document.documentElement.style.setProperty("--intensity",r.toFixed(3))},[r]);const c=(h,d,m)=>{const p=d>h.volume?.008:-.01,v=setInterval(()=>{const _=h.volume+p;h.volume=Math.min(1,Math.max(0,_)),(p>0&&h.volume>=d||p<0&&h.volume<=d)&&(clearInterval(v),m?.())},40)};return fi.useEffect(()=>{const h=o.current;if(!h)return;const d=()=>{e&&h.paused&&h.play().catch(()=>{})};return document.addEventListener("visibilitychange",d),e?(h.volume=0,h.play().catch(()=>{}),c(h,.32),()=>document.removeEventListener("visibilitychange",d)):(c(h,0,()=>h.pause()),()=>document.removeEventListener("visibilitychange",d))},[e]),fi.useEffect(()=>{const h=()=>{const m=new Date().getHours();let p=(m>=18?m:m+24)-18;p=Math.min(Math.max(p/8,0),1);const v=p*p*(3-2*p);document.documentElement.style.setProperty("--night",v.toFixed(3)),document.documentElement.style.setProperty("--night-inv",(1-v).toFixed(3))};h();const d=setInterval(h,300*1e3);return()=>clearInterval(d)},[]),$e.jsxs("div",{className:"room",children:[$e.jsx("audio",{ref:o,src:"/react-fireplace/audio/fireplace-crackle.mp3",loop:!0,preload:"auto"}),$e.jsx("button",{className:"sound-toggle",onClick:()=>i(h=>!h),"aria-label":"Toggle fireplace sound",children:e?"ON":"OFF"}),$e.jsxs("div",{className:"fireplace-shell",children:[$e.jsx("div",{className:"mantle"}),$e.jsxs("div",{className:"firebox",children:[$e.jsx(EA,{}),$e.jsx("div",{className:"glow"}),$e.jsx(bA,{}),$e.jsx("div",{className:"logs"}),$e.jsx(Ah,{count:4,intensity:r*.85,blur:14,zIndex:1,phase:0}),$e.jsx(Ah,{count:9,intensity:r*1,blur:7,zIndex:2,phase:-1.2}),$e.jsx(Ah,{count:14,intensity:r*1.1,blur:0,zIndex:3,phase:-2.4})]}),$e.jsx("div",{className:"hearth"})]})]})}function RA(){return $e.jsx(AA,{})}cS.createRoot(document.getElementById("root")).render($e.jsx(fi.StrictMode,{children:$e.jsx(RA,{})}));
