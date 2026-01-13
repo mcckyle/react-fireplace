@@ -42,7 +42,7 @@ export default function HeatRefraction() {
             },
         };
 
-        /* Material. */
+        /* Shaders. */
         const material = new THREE.ShaderMaterial({
             transparent: true,
             depthWrite: false,
@@ -58,10 +58,10 @@ export default function HeatRefraction() {
               uniform float uTime;
               uniform vec2 uResolution;
 
-              // Hash + value noise...
+              /* Hash + value noise. */
               float hash(vec2 p) {
-                  p = fract(p * vec2(123.34, 456.21));
-                  p += dot(p, p + 45,32);
+                  p = fract(p * vec2(127.1, 311.7));
+                  p += dot(p, p + 34.2);
                   return fract(p.x * p.y);
               }
 
@@ -80,31 +80,56 @@ export default function HeatRefraction() {
                          (d - b) * u.x * u.y;
               }
 
+              /* Fractal Brownian Motion. */
+              float fbm(vec2 p) {
+                float v = 0.0;
+                float a = 0.5;
+                for (int i = 0; i < 4; i ++)
+                {
+                    v += a * noise(p);
+                    p *= 2.0;
+                    a *= 0.5;
+                }
+                return v;
+              }
+
               void main() {
                   vec2 uv = gl_FragCoord.xy / uResolution;
 
-                  /* Heat Strength by Height. */
-                  float base = smoothstep(0.05, 0.4, uv.y);
-                  float fade = 1.0 - smoothstep(0.55, 0.95, uv.y);
-                  float heightMask = base * fade;
+                  /* Horizontal Center Weighting. */
+                  float center = 1.0 - abs(uv.x - 0.5) * 2.0;
+                  center = clamp(center, 0.0, 1.0);
 
-                  /* Slow, Upward Convection. */
-                  float t = uTime * 0.12;
-                  vec2 flow = vec2(0.0, -t);
+                  /* Vertical Heat Column. */
+                  float base = smoothstep(0.02, 0.35, uv.y);
+                  float topFade = 1.0 - smoothstep(0.6, 0.95, uv.y);
+                  float heightMask = base * topFade;
 
-                  float n1 = noise(uv * 14.0 + flow);
-                  float n2 = noise(uv * 28.0 - flow * 1.3);
+                  float heatMask = heightMask * center;
 
-                  float distortion = (n1 * 0.6 + n2 * 0.4 - 0.5);
+                  /* Time. */
+                  float t = uTime * 0.15;
 
-                  /* Vertical Bias (Heat Rises). */
+                  /* Convection Flow. */
+                  vec2 flow = vec2(
+                      fbm(uv * 4.0 + t) * 0.05,
+                      -t
+                  );
+
+                  /* Layered Turbulence. */
+                  float nLarge = fbm(uv * 0.6 + flow);
+                  float nSmall = fbm(uv * 18.0 - flow * 1.3);
+
+                  float distortion = (nLarge * 0.6 + nSmall * 0.4) - 0.5;
+
+                  /* Anisotropic Distortion (Heat Rises). */
                   vec2 offset = vec2(
-                      distortion * 0.015,
-                      distortion * 0.035
-                  ) * heightMask;
+                      distortion * 0.018,
+                      distortion * 0.045
+                  ) * heatMask;
 
-                  /* Invisible Refraction Layer. */
-                  float alpha = abs(distortion) * heightMask * 0.22;
+                  /* Alpha Controls Refraction Strength. */
+                  float alpha = abs(distortion) * heatMask * 0.25;
                   gl_FragColor = vec4(1.0, 1.0, 1.0, alpha);
               }
             `,
@@ -124,7 +149,6 @@ export default function HeatRefraction() {
             renderer.render(scene, camera);
             raf = requestAnimationFrame(animate);
         };
-
         animate();
 
         /* Resize. */
