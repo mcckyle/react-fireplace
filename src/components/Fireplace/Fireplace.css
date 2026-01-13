@@ -22,7 +22,7 @@
     position: relative;
     width: 100vw;
     height: 100vh;
-    background: radial-gradient(circle at center, #120a05 0%, #000 75%);
+    background: radial-gradient(circle at center 60%, #140a06 0%, #050200 70%, #000 100%);
     overflow: hidden;
     color-scheme: dark;
 
@@ -35,7 +35,7 @@
     position: absolute;
     inset: 0;
 
-    background: radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.38) 100%);
+    background: radial-gradient(circle, transparent 62%, rgba(0, 0, 0, 0.45));
     pointer-events: none;
     z-index: 1;
 }
@@ -87,7 +87,7 @@
     max-width: 1400px;
     height: 420px;
 
-    background: radial-gradient(circle at center, var(--coal) 0%, var(--black) 75%);
+    background: radial-gradient(circle at center bottom, #120804 0%, #070301 45%, #000 80%);
     overflow: hidden;
 }
 
@@ -122,13 +122,13 @@
 /* Glow Around Fire Styles. */
 .glow {
     position: absolute;
-    bottom: 6%;
+    bottom: 4%;
     left: 50%;
     transform: translateX(-50%);
 
     width: 90vw;
     max-width: 1600px;
-    height: 320px;
+    height: 340px;
 
     background: radial-gradient(
         ellipse at 50% 80%,
@@ -137,8 +137,8 @@
         transparent 75%
     );
 
-    filter: blur(34px) saturate(1.2);
-    opacity: calc(0.5 * var(--intensity));
+    filter: blur(42px) saturate(1.15);
+    opacity: calc(0.45 * var(--intensity));
     mix-blend-mode: screen;
 
     animation: glow-pulse 18s ease-in-out infinite;
@@ -158,13 +158,13 @@
 
 .flame {
     width: calc(16px + var(--flare) * 8px);
-    height: calc(84px + 72px * var(--heat));
+    height: calc(96px + 78px * var(--heat));
 
     transform-origin: bottom center;
     transform: scaleY(var(--scale)) translateY(calc(var(--heat) * -2px));
     border-radius: 58% 58% 42% 42% / 72% 72% 38% 38%;
-    opacity: calc(0.65 * var(--intensity) * var(--heat));
-    filter: blur(1.4px) brightness(calc(0.9 + var(--heat) * 0.28));
+    opacity: calc(0.6 * var(--intensity) * var(--heat));
+    filter: blur(1.2px) brightness(calc(0.92 + var(--heat) * 0.25));
     will-change: transform, opacity;
     background: radial-gradient(
         ellipse at bottom,
@@ -216,14 +216,15 @@
     animation: ember-rise calc(9s + var(--rise) * 0.4) linear infinite;
 }
 
+/* Heat Shimmer. */
 .heat-webgl {
     position: absolute;
     inset: 0;
     pointer-events: none;
     z-index: 4;
     mix-blend-mode: soft-light;
-    opacity: calc(0.55 + var(--intensity) * 0.15);
-    filter: blur(0.4px);
+    opacity: calc(0.45 + var(--intensity) * 0.12);
+    filter: blur(0.3px);
 }
 
 .sound-toggle {

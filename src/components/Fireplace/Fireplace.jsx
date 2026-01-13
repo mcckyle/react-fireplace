@@ -7,7 +7,7 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import HeatRefraction from "../HeatRefraction/HeatRefraction.jsx";
 import "./Fireplace.css";
 
-const EMBER_COUNT = 18;
+const EMBER_COUNT = 16;
 
 function FlameRow({ count, intensity, blur = 0, zIndex = 1, phase = 0 }) {
   const flames = useMemo(
@@ -16,11 +16,11 @@ function FlameRow({ count, intensity, blur = 0, zIndex = 1, phase = 0 }) {
        const t = i / (count - 1);
        const center = 1 - Math.abs(t - 0.5) * 2; //0 edges -> 1 center.
        return {
-        scale: (0.8 + Math.random() * 0.3 + center * 0.15).toFixed(2),
-        drift: `${(Math.random() * 10 - 5).toFixed(1)}px`,
-        heat: (0.65 + Math.random() * 0.5 + center * 0.25).toFixed(2),
-        flare: Math.random() > 0.78 ? 1 : 0,
-        delay: `${(-Math.random() * 4 + phase).toFixed(2)}s`,
+        scale: (0.85 + Math.random() * 0.25 + center * 0.15).toFixed(2),
+        drift: `${(Math.random() * 8 - 4).toFixed(1)}px`,
+        heat: (0.7 + Math.random() * 0.45 + center * 0.25).toFixed(2),
+        flare: Math.random() > 0.8 ? 1 : 0,
+        delay: `${(-Math.random() * 3.5 + phase).toFixed(2)}s`,
      };
     }),
    [count, phase]
@@ -51,11 +51,11 @@ function EmberLayer() {
       () =>
         Array.from({ length: EMBER_COUNT }).map(() => ({
           x: `${(Math.random() * 100).toFixed(1)}%`,
-          delay: `${(Math.random() * 12).toFixed(1)}s`,
-          rise: `${(14 + Math.random() * 18).toFixed(1)}px`,
-          size: `${(1.6 + Math.random() * 1.8).toFixed(2)}px`,
-          drift: `${(Math.random() * 8 - 4).toFixed(1)}px`,
-          cluster: Math.random() > 0.75 ? 1.5 : 1,
+          delay: `${(Math.random() * 14).toFixed(1)}s`,
+          rise: `${(16 + Math.random() * 20).toFixed(1)}px`,
+          size: `${(1.4 + Math.random() * 1.6).toFixed(2)}px`,
+          drift: `${(Math.random() * 6 - 3).toFixed(1)}px`,
+          cluster: Math.random() > 0.78 ? 1.4 : 1,
         })),
       []
     );
@@ -89,13 +89,11 @@ function Fireplace() {
   useEffect(() => {
     let target = 1;
     let velocity = 0;
-    const pick = () => {
-      target = 0.9 + Math.random() * 0.25;
-    };
 
+    const pick = () => { target = 0.9 + Math.random() * 0.25; };
     pick();
-    const targetTimer = setInterval(pick, 28000);
 
+    const targetTimer = setInterval(pick, 28000);
     const tick = setInterval(() => {
       setIntensity(current => {
         const force = (target - current) * 0.02;
@@ -114,22 +112,6 @@ function Fireplace() {
     );
   }, [intensity]);
 
-  const fadeAudio = (audio, target, onDone) => {
-    const step = target > audio.volume ? 0.008 : -0.01;
-
-    const interval = setInterval(() => {
-      const next = audio.volume + step;
-      audio.volume = Math.min(1, Math.max(0, next));
-      if (
-        ( (step > 0) && (audio.volume >= target) ) ||
-        ( (step < 0) && (audio.volume <= target) )
-      ) {
-        clearInterval(interval);
-        onDone?.();
-      }
-    }, 40);
-  }
-
   /* Audio Effects. */
   useEffect(() => {
       const audio = audioRef.current;
@@ -138,46 +120,41 @@ function Fireplace() {
           return;
       }
 
-      const resume = () => {
-        if ( (soundOn) && (audio.paused) )
-        {
-          audio.play().catch(() => {});
-        }
-      };
+      const resume = () => soundOn && audio.paused && audio.play().catch(() => {});
       document.addEventListener("visibilitychange", resume);
 
       if ( ! soundOn)
       {
-        fadeAudio(audio, 0, () => audio.pause());
+        audio.pause();
+        audio.volume = 0;
         return () => document.removeEventListener("visibilitychange", resume);
       }
 
-      audio.volume = 0;
+      audio.volume = 0.32;
       audio.play().catch(() => {});
-      fadeAudio(audio, 0.32);
 
       return () => document.removeEventListener("visibilitychange", resume);
     }, [soundOn]);
 
   /* Night Warmth Effects. */
-  useEffect(() => {
-    const update = () => {
-      const hour = new Date().getHours();
-
-      //Normalize: 18 -> 0 (early evening), 2 -> 1 (deep night).
-      let t = (hour >= 18 ? hour : hour + 24) - 18;
-      t = Math.min(Math.max(t / 8, 0), 1);
-      const eased = t * t * (3 - 2 * t);
-
-      const root = document.documentElement;
-      document.documentElement.style.setProperty("--night", eased.toFixed(3));
-      document.documentElement.style.setProperty("--night-inv", (1 - eased).toFixed(3));
-    };
-
-    update();
-    const i = setInterval(update, 5 * 60 * 1000);
-    return () => clearInterval(i);
-  }, []);
+//   useEffect(() => {
+//     const update = () => {
+//       const hour = new Date().getHours();
+//
+//       //Normalize: 18 -> 0 (early evening), 2 -> 1 (deep night).
+//       let t = (hour >= 18 ? hour : hour + 24) - 18;
+//       t = Math.min(Math.max(t / 8, 0), 1);
+//       const eased = t * t * (3 - 2 * t);
+//
+//       const root = document.documentElement;
+//       document.documentElement.style.setProperty("--night", eased.toFixed(3));
+//       document.documentElement.style.setProperty("--night-inv", (1 - eased).toFixed(3));
+//     };
+//
+//     update();
+//     const i = setInterval(update, 5 * 60 * 1000);
+//     return () => clearInterval(i);
+//   }, []);
 
   return (
     <div className="room">
@@ -206,8 +183,8 @@ function Fireplace() {
           <div className="logs" />
 
           <FlameRow count={4} intensity={intensity * 0.85} blur={14} zIndex={1} phase={0} />
-          <FlameRow count={9} intensity={intensity * 1.0} blur={7} zIndex={2} phase={-1.2} />
-          <FlameRow count={14} intensity={intensity * 1.1} blur={0} zIndex={3} phase={-2.4} />
+          <FlameRow count={9} intensity={intensity} blur={7} zIndex={2} phase={-1.1} />
+          <FlameRow count={14} intensity={intensity * 1.1} blur={0} zIndex={3} phase={-2.2} />
         </div>
 
         <div className="hearth" />
