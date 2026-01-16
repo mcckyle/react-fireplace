@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 12 January 2026
+//Date: 15 January 2026
 //Description: This file contains the parent component for the React Fireplace project.
 
 import { useEffect, useRef, useState, useMemo } from "react";
@@ -182,9 +182,9 @@ function Fireplace() {
           <EmberLayer />
           <div className="logs" />
 
-          <FlameRow count={4} intensity={intensity * 0.85} blur={14} zIndex={1} phase={0} />
-          <FlameRow count={9} intensity={intensity} blur={7} zIndex={2} phase={-1.1} />
-          <FlameRow count={14} intensity={intensity * 1.1} blur={0} zIndex={3} phase={-2.2} />
+          <FlameRow count={4} intensity={intensity * 0.85} blur={10} zIndex={1} phase={0} />
+          <FlameRow count={9} intensity={intensity} blur={5} zIndex={2} phase={-1.2} />
+          <FlameRow count={14} intensity={intensity * 1.1} blur={0} zIndex={3} phase={-2.4} />
         </div>
 
         <div className="hearth" />
