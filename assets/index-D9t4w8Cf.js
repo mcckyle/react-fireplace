@@ -4072,10 +4072,10 @@ void main() {
                   float heatMask = base * topFade * center;
 
                   /* Time. */
-                  float t = uTime * 0.15;
+                  float t = uTime * 0.18;
 
                   /* Convection Flow. */
-                  vec2 flow = vec2(fbm(uv * 4.0 + t) * 0.05, -t);
+                  vec2 flow = vec2(fbm(uv * 4.0 + t) * 0.05, -t * 0.9);
 
                   /* Layered Turbulence. */
                   float nLarge = fbm(uv * 0.5 + flow * 0.6);
