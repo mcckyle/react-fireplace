@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 23 January 2026
+//Date: 30 January 2026
 //Description: This file contains the parent component for the React Fireplace project.
 
 import { useEffect, useRef, useState, useMemo } from "react";
@@ -55,6 +55,7 @@ function EmberLayer() {
           drift: `${(Math.random() * 6 - 3).toFixed(1)}px`,
           cluster: Math.random() > 0.78 ? 1.4 : 1,
           sway: (Math.random() * 4 - 2).toFixed(1),
+          opacity: (0.35 + Math.random() * 0.45).toFixed(2),
         })),
       []
     );
@@ -73,6 +74,7 @@ function EmberLayer() {
               "--drift": e.drift,
               "--cluster": e.cluster,
               "--sway": e.sway,
+              "--ember-opacity": e.opacity,
             }}
           />
         ))}
@@ -87,14 +89,15 @@ function Fireplace() {
 
   //Flame Breathing Effects.
   useEffect(() => {
-    let target = 1, velocity = 0;
+    let target = 1;
+    let velocity = 0;
 
     const pick = () => { target = 0.9 + Math.random() * 0.25; };
     pick();
 
     const targetTimer = setInterval(pick, 28000);
     const tick = setInterval(() => {
-      setIntensity(current => {
+      setIntensity((current) => {
         const force = (target - current) * 0.025;
         velocity = velocity * 0.85 + force;
         return current + velocity;
@@ -116,20 +119,33 @@ function Fireplace() {
           return;
       }
 
-      const resume = () => soundOn && audio.paused && audio.play().catch(() => {});
-      document.addEventListener("visibilitychange", resume);
+      let fade;
 
-      if ( ! soundOn)
+      if (soundOn)
       {
-        audio.pause();
         audio.volume = 0;
-        return () => document.removeEventListener("visibilitychange", resume);
+        audio.play().catch(() => {});
+        fade = setInterval(() => {
+          audio.volume = Math.min(audio.volume + 0.02, 0.32);
+          if (audio.volume >= 0.32)
+          {
+            clearInterval(fade);
+          }
+        }, 60);
+      }
+      else
+      {
+        fade = setInterval(() => {
+          audio.volume = Math.max(audio.volume - 0.03, 0);
+          if (audio.volume === 0)
+          {
+            audio.pause();
+            clearInterval(fade);
+          }
+        }, 50);
       }
 
-      audio.volume = 0.32;
-      audio.play().catch(() => {});
-
-      return () => document.removeEventListener("visibilitychange", resume);
+      return () => clearInterval(fade);
     }, [soundOn]);
 
   return (
@@ -143,7 +159,7 @@ function Fireplace() {
 
       <button
         className="sound-toggle"
-        onClick={() => setSoundOn(v => !v)}
+        onClick={() => setSoundOn((v) => ! v)}
         aria-label="Toggle fireplace sound"
       >
         {soundOn ? "ON" : "OFF"}
@@ -156,7 +172,7 @@ function Fireplace() {
           <div className="glow" />
           <EmberLayer />
           <div className="logs" />
-          <FlameRow count={4} intensity={intensity * 0.85} blur={10} zIndex={1} phase={0} />
+          <FlameRow count={4} intensity={intensity * 0.85} blur={10} zIndex={1} />
           <FlameRow count={9} intensity={intensity} blur={5} zIndex={2} phase={-1.2} />
           <FlameRow count={14} intensity={intensity * 1.1} blur={0} zIndex={3} phase={-2.4} />
         </div>

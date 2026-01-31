@@ -165,7 +165,7 @@
     transform-origin: bottom center;
     transform: scaleY(var(--scale)) translateY(calc(var(--heat) * -2px));
     border-radius: 58% 58% 42% 42% / 72% 72% 38% 38%;
-    opacity: calc(0.6 * var(--intensity) * var(--heat) * var(--night-inv));
+    opacity: calc(0.55 * var(--intensity) * var(--heat) * var(--night-inv));
     filter: blur(1.2px) brightness(calc(0.92 + var(--heat) * 0.25));
     will-change: transform, opacity;
     background: radial-gradient(
@@ -202,6 +202,7 @@
     height: var(--size);
     bottom: 0;
     left: var(--x);
+
     border-radius: 50%;
     transform: scale(var(--cluster)) translateX(var(--sway));
     background: radial-gradient(
@@ -212,7 +213,7 @@
     );
 
     filter: blur(1.2px);
-    opacity: calc(0.2 + 0.6 * var(--intensity) * (0.8 + random()));
+    opacity: calc(var(--ember-opacity) * var(--intensity));
 
     animation-delay: var(--delay);
     animation: ember-rise calc(9s + var(--rise) * 0.4) linear infinite;

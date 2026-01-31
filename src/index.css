@@ -9,10 +9,27 @@
 html, body, #root {
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
+
   background-color: #000;
+  color: #fff;
   overflow: hidden;
 
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  overscroll-behavior: none;
+}
+
+/* Prevent Accidental Selection. */
+body { user-select: none; touch-action: manipulation; }
+
+/* Root Container Hinting. */
+#root { display: flex; align-items: stretch; justify-content: stretch; }
+
+/* Reduce GPU Banding on Gradients. */
+@media (min-resolution: 2dppx)
+{
+  body { background-color: #000; }
 }
