@@ -1,0 +1,79 @@
+/* Filename: src/components/FlameRow/FlameRow.css */
+
+:root {
+    /* Scene-Referred Luminance Anchors. */
+    --black: #000;
+    --coal: #0c0704;
+
+    /* Fire energy (OLED-tuned). */
+    --ember-red: #b83200;
+    --flame-orange: #ff6a00;
+    --flame-gold: #ffd27a;
+    --flare-white: #fff3dc;
+
+    /* Night Modulation. */
+    --night: 0;
+    --night-inv: 1;
+    --intensity: 1;
+}
+
+/* Flames Styles. */
+.flame-row
+{
+    position: absolute;
+    bottom: calc(5% + var(--row-blur) * 0.4px);
+    left: 50%;
+    display: flex;
+    gap: clamp(8px, 2vw, 22px);
+    transform: translateX(-50%);
+    filter: blur(calc(var(--row-blur) * 1px));
+    pointer-events: none;
+    z-index: var(--zIndex);
+}
+
+.flame
+{
+    width: calc(14px + var(--flare) * 8px);
+    height: calc(80px + 90px * var(--heat));
+
+    transform-origin: bottom center;
+    transform: scaleY(var(--scale)) translateY(calc(var(--heat) * -2px));
+    border-radius: 50% 50% 40% 40% / 70% 70% 35% 35%;
+    opacity: calc(0.55 * var(--intensity) * var(--heat) * var(--night-inv));
+    filter: blur(1px) brightness(calc(0.92 + var(--heat) * 0.25));
+    will-change: transform, opacity;
+    background: radial-gradient(
+        ellipse at bottom,
+        var(--flare-white) 0%,
+        var(--flame-gold) 28%,
+        var(--flame-orange) 54%,
+        rgba(255, 110, 0, 0.18) 70%,
+        rgba(184, 50, 0, 0.12) 85%,
+        transparent 100%
+    );
+
+    animation-delay: var(--delay);
+    animation: flame-flicker
+                calc(2.4s + 1.6s * (1 - var(--heat)))
+                cubic-bezier(0.4, 0, 0.2, 1)
+                infinite;
+}
+
+@keyframes flame-flicker
+{
+    0% { transform: scaleY(var(--scale)) translateX(0) translateY(0); }
+    25% { transform: scaleY(calc(var(--scale) * 1.08))
+        translateX(var(--drift))
+        translateY(-1.4px);
+    }
+    55% { transform: scaleY(calc(var(--scale) * 0.94))
+        translateX(calc(var(--drift) * -0.6))
+        translateY(0.8px);
+    }
+    100% { transform: scaleY(var(--scale)) translateX(0) translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce)
+{
+    .flame { animation: none !important; }
+}

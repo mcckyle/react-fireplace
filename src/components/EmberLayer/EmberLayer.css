@@ -1,0 +1,57 @@
+/* Filename: src/components/EmberLayer/EmberLayer.css */
+
+.embers
+{
+    position: absolute;
+    bottom: 4%;
+    left: 50%;
+    width: 80vw;
+    max-width: 1200px;
+    height: 120px;
+
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.ember
+{
+    width: var(--size);
+    height: var(--size);
+    bottom: 0;
+    left: var(--x);
+    position: absolute;
+
+    border-radius: 50%;
+    transform: scale(var(--cluster)) translateX(var(--sway));
+    background: radial-gradient(
+        circle at center,
+        rgba(255, 200, 140, calc(0.8 + 0.2 * var(--glow))),
+        rgba(255, 130, 40, 0.35) 60%,
+        transparent 85%
+    );
+
+    filter: blur(1.5px);
+    opacity: calc(var(--ember-opacity) * var(--intensity));
+
+    animation-delay: var(--delay);
+    animation: ember-rise calc(8s + var(--rise) * 0.35) linear infinite;
+}
+
+@keyframes ember-rise
+{
+    0% { opacity: 0; transform: scale(var(--cluster)) translateX(var(--sway)) translateY(0); }
+    15% { opacity: calc(0.8 * var(--ember-opacity)); }
+    100% {
+        opacity: 0;
+        transform:
+            translateX(calc(var(--drift) * 2))
+            translateY(calc(var(--rise) * -1.6))
+            scale(0.1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce)
+{
+    .ember { animation: none !important; }
+}
