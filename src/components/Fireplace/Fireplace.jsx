@@ -1,7 +1,7 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 13 February 2026
-//Description: This file contains the parent component for the React Fireplace project.
+//Date: 16 March 2026
+//Description: This file contains the parent component for the Fireplace React project.
 
 import { useEffect, useRef, useState } from "react";
 import FlameRow from "../FlameRow/FlameRow.jsx";
@@ -12,34 +12,54 @@ import "./Fireplace.css";
 function Fireplace()
 {
   const audioRef = useRef(null);
+  const rafRef = useRef(null);
   const [soundOn, setSoundOn] = useState(false);
   const [intensity, setIntensity] = useState(1);
 
   //Flame Breathing Effects.
   useEffect(() => {
+    let current = 1;
     let target = 1;
     let velocity = 0;
+    let lastTargetChange = performance.now();
 
-    const pickTarget = () => (target = 0.9 + Math.random() * 0.25);
+    const pickTarget = () =>
+    {
+      target = 0.9 + Math.random() * 0.25;
+      lastTargetChange = performance.now();
+    };
+
     pickTarget();
 
-    const targetTimer = setInterval(pickTarget, 28000);
-    const tick = setInterval(() => {
-      setIntensity((current) => {
-        const force = (target - current) * 0.025;
-        velocity = velocity * 0.85 + force;
-        return current + velocity;
-      });
-    }, 160);
+    const animate = (t) =>
+    {
+      if (t - lastTargetChange > 26000)
+      {
+        pickTarget();
+      }
 
-    return () => { clearInterval(targetTimer); clearInterval(tick); }
+      const force = (target - current) * 0.02;
+      velocity = velocity * 0.88 + force;
+      current += velocity;
+
+      setIntensity(current);
+      rafRef.current = requestAnimationFrame(animate);
+    };
+
+    rafRef.current = requestAnimationFrame(animate);
+
+    return () =>
+    {
+      cancelAnimationFrame(rafRef.current);
+    };
+
   }, []);
 
   useEffect(() => {
     document.documentElement.style.setProperty("--intensity", intensity.toFixed(3));
   }, [intensity]);
 
-  //Audio Handling Effects.
+  //Audio Handling.
   useEffect(() => {
       const audio = audioRef.current;
       if ( ! audio)
@@ -53,18 +73,20 @@ function Fireplace()
       {
         audio.volume = 0;
         audio.play().catch(() => {});
-        fade = setInterval(() => {
-          audio.volume = Math.min(audio.volume + 0.02, 0.32);
+        fade = setInterval(() =>
+        {
+          audio.volume = Math.min(audio.volume + 0.015, 0.32);
           if (audio.volume >= 0.32)
           {
             clearInterval(fade);
           }
-        }, 60);
+        }, 50);
       }
       else
       {
-        fade = setInterval(() => {
-          audio.volume = Math.max(audio.volume - 0.03, 0);
+        fade = setInterval(() =>
+        {
+          audio.volume = Math.max(audio.volume - 0.02, 0);
           if (audio.volume === 0)
           {
             audio.pause();

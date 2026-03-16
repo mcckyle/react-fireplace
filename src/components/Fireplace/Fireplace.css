@@ -17,13 +17,14 @@
     --intensity: 1;
 }
 
-/* Room and Ambient Styles. */
+/* Room Environment Styles. */
 .room {
     position: relative;
     width: 100vw;
     height: 100vh;
-    background: radial-gradient(circle at center 60%, #140a06 0%, #050200 70%, #000 100%);
     overflow: hidden;
+    background: radial-gradient(circle at 50% 60%, #140a06 0%, #050200 70%, #000 100%);
+
     color-scheme: dark;
 
     animation: camera-drift 60s ease-in-out infinite;
@@ -46,9 +47,14 @@
     position: absolute;
     inset: 0;
 
-    background: radial-gradient(circle at center bottom, rgba(255, 140, 80, 0.22) 0%, transparent 70%);
-    opacity: calc(0.28 + 0.18 * var(--intensity) * var(--night-inv));
-    filter: blur(36px) saturate(0.75);
+    background:
+      radial-gradient(
+          circle at 50% 95%,
+          rgba(255, 140, 80, 0.25),
+          transparent 70%
+      );
+    opacity: calc(0.25 + 0.2 * var(--intensity));
+    filter: blur(38px) saturate(0.8);
     mix-blend-mode: screen;
     z-index: 0;
 }
@@ -69,14 +75,28 @@
 .mantle {
     width: 100%;
     height: 56px;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.06), #191919 18%, #0b0b0b);
+    background:
+      linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.06),
+          #191919 18%,
+          #0b0b0b
+      );
+
     box-shadow: 0 10px 28px rgba(0, 0, 0, 0.85);
 }
 
 .hearth {
     width: 100%;
     height: 84px;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.04), #0b0b0b, #050505);
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.04),
+        #0b0b0b,
+        #050505
+      );
+
     box-shadow: inset 0 8px 16px rgba(0, 0, 0, 0.9);
 }
 
@@ -86,9 +106,15 @@
     width: 100vw;
     max-width: 1400px;
     height: 420px;
-
-    background: radial-gradient(circle at center bottom, #120804 0%, #070301 45%, #000 80%);
     overflow: hidden;
+
+    background:
+      radial-gradient(
+          circle at 50% 100%,
+          #140804 0%,
+          #070301 50%,
+          #000 80%
+      );
 }
 
 /* Logs Styles. */
@@ -102,7 +128,7 @@
     height: 60px;
     border-radius: 30px;
     background: linear-gradient(to top, #0b0502, #020100);
-    box-shadow: inset 0 0 18px rgba(255, 90, 30, 0.25),
+    box-shadow: inset 0 0 20px rgba(255, 90, 30, 0.25),
                 0 12px 24px rgba(0, 0, 0, 0.8);
 
     animation: log-pulse 12s ease-in-out infinite;
@@ -114,13 +140,13 @@
     inset: 6px;
     border-radius: inherit;
 
-    background: radial-gradient(circle at 30% 50%, rgba(255, 80, 20, 0.25), transparent 60%), radial-gradient(circle at 70% 60%, rgba(255, 120, 40, 0.18), transparent 65%);
+    background:
+      radial-gradient(circle at 30% 50%, rgba(255, 80, 20, 0.25), transparent 60%), radial-gradient(circle at 70% 60%, rgba(255, 120, 40, 0.18), transparent 65%);
     mix-blend-mode: screen;
     opacity: calc(0.6 * var(--intensity));
-    pointer-events: none;
 }
 
-/* Glow Around Fire Styles. */
+/* Fire Glow Styles. */
 .glow {
     position: absolute;
     bottom: 4%;
@@ -132,7 +158,7 @@
     height: 340px;
 
     background: radial-gradient(
-        ellipse at 50% 80%,
+        ellipse at 50% 85%,
         rgba(255, 160, 60, 0.35),
         rgba(255, 120, 30, 0.18) 40%,
         rgba(255, 90, 20, 0.12) 55%,
@@ -140,7 +166,7 @@
     );
 
     filter: blur(calc(42px * var(--intensity))) saturate(1.1);
-    opacity: calc(0.45 * var(--intensity) * var(--night-inv) + 0.2);
+    opacity: calc(0.45 * var(--intensity) + 0.2);
     mix-blend-mode: screen;
 
     animation: glow-pulse 12s ease-in-out infinite;
@@ -151,18 +177,26 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    z-index: 4;
+
     mix-blend-mode: soft-light;
     opacity: calc(0.45 + var(--intensity) * 0.12);
     filter: blur(0.3px);
 
-    mask-image: radial-gradient(circle at 50% 80%, rgba(0, 0, 0, 1) 0%, transparent 85%);
+    mask-image:
+      radial-gradient(
+          circle at 50% 80%,
+          rgba(0, 0, 0, 1),
+          transparent 85%
+      );
+
+    z-index: 4;
 }
 
 .sound-toggle {
     position: absolute;
     top: 18px;
     right: 18px;
+
     width: 42px;
     height: 42px;
     border-radius: 999px;
@@ -171,19 +205,18 @@
     color: rgba(255, 200, 140, 0.85);
     box-shadow: 0 0 12px rgba(255, 160, 60, 0.5);
 
-    font-weight: 600;
     cursor: pointer;
     backdrop-filter: blur(6px);
     opacity: 0.45;
     z-index: 10;
 
-    transition: all 0.3s ease;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease;
 }
 .room:not(:hover) .sound-toggle { opacity: 0.02; pointer-events: none; }
 .sound-toggle:hover { transform: scale(1.08); box-shadow: 0 0 18px rgba(255, 180, 80, 0.6); }
 .sound-toggle:active { transform: scale(0.96); }
 
-/* Animations Styles. */
+/* Fireplace Animations Styles. */
 @keyframes camera-drift
 {
     0%, 100% { transform: scale(1) translateY(0); }
