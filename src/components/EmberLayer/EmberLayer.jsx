@@ -1,7 +1,7 @@
 //Filename: EmberLayer.jsx
 //Author: Kyle McColgan
-//Date: 13 February 2026
-//Description: This file contains the EmberLayer component for the  Fireplace React project.
+//Date: 19 March 2026
+//Description: This file contains the EmberLayer component for the Fireplace React project.
 
 import { useMemo } from "react";
 import "./EmberLayer.css";
@@ -13,14 +13,15 @@ export default function EmberLayer()
     const embers = useMemo(() =>
         Array.from({ length: EMBER_COUNT }).map(() => ({
             x: `${(Math.random() * 100).toFixed(1)}%`,
-            delay: `${(Math.random() * 12).toFixed(1)}s`,
-            rise: `${(14 + Math.random() * 36).toFixed(1)}px`,
-            size: `${(1.5 + Math.random() * 2.5).toFixed(2)}px`,
-            drift: `${(Math.random() * 8 - 4).toFixed(1)}px`,
-            cluster: Math.random() > 0.78 ? 1.5 : 1,
-            sway: (Math.random() * 5 - 2.5).toFixed(1),
-            opacity: (0.35 + Math.random() * 0.45).toFixed(2),
-            glow: Math.random() > 0.85 ? 1 : 0,
+            delay: `${(Math.random() * 10).toFixed(1)}s`,
+            rise: `${(16 + Math.random() * 40).toFixed(1)}px`,
+            size: `${(1.4 + Math.random() * 2.4).toFixed(2)}px`,
+            drift: `${(Math.random() * 10 - 5).toFixed(2)}px`,
+            sway: (Math.random() * 6 - 3).toFixed(2),
+            cluster: Math.random() > 0.8 ? 1.6 : 1,
+            opacity: (0.4 + Math.random() * 0.4).toFixed(2),
+            glow: Math.random() > 0.82 ? 1 : 0,
+            depth: (0.8 + Math.random() * 0.6).toFixed(2)
         })),
       []);
 
@@ -36,10 +37,11 @@ export default function EmberLayer()
                         "--rise": e.rise,
                         "--size": e.size,
                         "--drift": e.drift,
-                        "--cluster": e.cluster,
                         "--sway": e.sway,
+                        "--cluster": e.cluster,
                         "--ember-opacity": e.opacity,
                         "--glow": e.glow,
+                        "--depth": e.depth
                     }}
                 />
             ))}
