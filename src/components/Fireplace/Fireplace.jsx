@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 16 March 2026
+//Date: 10 April 2026
 //Description: This file contains the parent component for the Fireplace React project.
 
 import { useEffect, useRef, useState } from "react";
@@ -12,11 +12,11 @@ import "./Fireplace.css";
 function Fireplace()
 {
   const audioRef = useRef(null);
+  const audioFadeRef = useRef(null);
   const rafRef = useRef(null);
   const [soundOn, setSoundOn] = useState(false);
-  const [intensity, setIntensity] = useState(1);
 
-  //Flame Breathing Effects.
+  //Intensity (CSS-driven, not React-driven).
   useEffect(() => {
     let current = 1;
     let target = 1;
@@ -25,7 +25,7 @@ function Fireplace()
 
     const pickTarget = () =>
     {
-      target = 0.9 + Math.random() * 0.25;
+      target = 0.92 + Math.random() * 0.22;
       lastTargetChange = performance.now();
     };
 
@@ -33,70 +33,67 @@ function Fireplace()
 
     const animate = (t) =>
     {
-      if (t - lastTargetChange > 26000)
+      if (t - lastTargetChange > 28000)
       {
         pickTarget();
       }
 
-      const force = (target - current) * 0.02;
-      velocity = velocity * 0.88 + force;
+      const force = (target - current) * 0.018;
+      velocity = velocity * 0.9 + force;
       current += velocity;
 
-      setIntensity(current);
+      document.documentElement.style.setProperty(
+        "--intensity",
+        current.toFixed(3)
+      );
       rafRef.current = requestAnimationFrame(animate);
     };
 
     rafRef.current = requestAnimationFrame(animate);
 
-    return () =>
-    {
-      cancelAnimationFrame(rafRef.current);
-    };
-
+    return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
+  //Audio (RAF fade).
   useEffect(() => {
-    document.documentElement.style.setProperty("--intensity", intensity.toFixed(3));
-  }, [intensity]);
+    const audio = audioRef.current;
+    if (!audio)
+    {
+        return;
+    }
 
-  //Audio Handling.
-  useEffect(() => {
-      const audio = audioRef.current;
-      if ( ! audio)
+    cancelAnimationFrame(audioFadeRef.current);
+
+    const targetVolume = soundOn ? 0.32 : 0;
+
+    if (soundOn)
+    {
+      audio.play().catch(() => {});
+    }
+
+    const fade = () =>
+    {
+      const diff = targetVolume - audio.volume;
+
+      if (Math.abs(diff) < 0.005)
       {
-          return;
-      }
+        audio.volume = targetVolume;
 
-      let fade;
-
-      if (soundOn)
-      {
-        audio.volume = 0;
-        audio.play().catch(() => {});
-        fade = setInterval(() =>
+        if (targetVolume === 0)
         {
-          audio.volume = Math.min(audio.volume + 0.015, 0.32);
-          if (audio.volume >= 0.32)
-          {
-            clearInterval(fade);
-          }
-        }, 50);
-      }
-      else
-      {
-        fade = setInterval(() =>
-        {
-          audio.volume = Math.max(audio.volume - 0.02, 0);
-          if (audio.volume === 0)
-          {
-            audio.pause();
-            clearInterval(fade);
-          }
-        }, 50);
+          audio.pause();
+        }
+        return;
       }
 
-      return () => clearInterval(fade);
-    }, [soundOn]);
+      audio.volume += diff * 0.08;
+      audioFadeRef.current = requestAnimationFrame(fade);
+    };
+
+    fade();
+
+    return () => cancelAnimationFrame(audioFadeRef.current);
+  }, [soundOn]);
 
   return (
     <div className="room">
@@ -122,9 +119,9 @@ function Fireplace()
           <div className="glow" />
           <EmberLayer />
           <div className="logs" />
-          <FlameRow count={4} intensity={intensity * 0.85} blur={10} zIndex={1} />
-          <FlameRow count={9} intensity={intensity} blur={5} zIndex={2} phase={-1.2} />
-          <FlameRow count={14} intensity={intensity * 1.1} blur={0} zIndex={3} phase={-2.4} />
+          <FlameRow count={4} intensity={0.85} blur={10} zIndex={1} />
+          <FlameRow count={9} intensity={1} blur={5} zIndex={2} phase={-1.2} />
+          <FlameRow count={14} intensity={1.1} blur={0} zIndex={3} phase={-2.4} />
         </div>
         <div className="hearth" />
       </div>

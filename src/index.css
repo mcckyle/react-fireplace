@@ -5,7 +5,10 @@ html, body
 {
   margin: 0;
   padding: 0;
+
+  width: 100%;
   height: 100%;
+  min-height: 100dvh; /* Stable Viewport (fixes mobile browser UI jumping). */
   background: #000;
   color: #fff;
 
@@ -14,15 +17,18 @@ html, body
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 
+  /* Prevent Scroll + Bounce. */
+  overflow: hidden;
   overscroll-behavior: none;
+
   user-select: none;
   touch-action: manipulation;
 }
 
-/* Root Container Hinting. */
-#root { height: 100%; width: 100%; overflow: hidden; }
+/* Root Container Styles. */
+#root { width: 100%; height: 100%; display: contents; /* Removes unnecessary wrapper layer. */ }
 
-/* Prevent gradient banding artifacts on high-DPI displays. */
+/* High-DPI gradient stabilization. */
 @media (min-resolution: 2dppx)
 {
   body { background: #000; }
