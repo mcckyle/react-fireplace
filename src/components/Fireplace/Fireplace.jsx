@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 10 April 2026
+//Date: 27 April 2026
 //Description: This file contains the parent component for the Fireplace React project.
 
 import { useEffect, useRef, useState } from "react";
@@ -25,7 +25,7 @@ function Fireplace()
 
     const pickTarget = () =>
     {
-      target = 0.92 + Math.random() * 0.22;
+      target = 0.94 + Math.random() * 0.18;
       lastTargetChange = performance.now();
     };
 
@@ -33,13 +33,19 @@ function Fireplace()
 
     const animate = (t) =>
     {
-      if (t - lastTargetChange > 28000)
+      if (document.hidden)
+      {
+        rafRef.current = requestAnimationFrame(animate);
+        return;
+      }
+
+      if (t - lastTargetChange > 32000)
       {
         pickTarget();
       }
 
-      const force = (target - current) * 0.018;
-      velocity = velocity * 0.9 + force;
+      const force = (target - current) * 0.012;
+      velocity = velocity * 0.92 + force;
       current += velocity;
 
       document.documentElement.style.setProperty(
@@ -66,7 +72,7 @@ function Fireplace()
 
     const targetVolume = soundOn ? 0.32 : 0;
 
-    if (soundOn)
+    if ( (soundOn) && (audio.paused))
     {
       audio.play().catch(() => {});
     }
@@ -86,7 +92,7 @@ function Fireplace()
         return;
       }
 
-      audio.volume += diff * 0.08;
+      audio.volume += diff * 0.06;
       audioFadeRef.current = requestAnimationFrame(fade);
     };
 
@@ -96,7 +102,7 @@ function Fireplace()
   }, [soundOn]);
 
   return (
-    <div className="room">
+    <main className="room" aria-label="Digital fireplace">
       <audio
         ref={audioRef}
         src="/react-fireplace/audio/fireplace-crackle.mp3"
@@ -105,14 +111,19 @@ function Fireplace()
       />
 
       <button
+        type="button"
         className="sound-toggle"
         onClick={() => setSoundOn((v) => ! v)}
-        aria-label="Toggle fireplace sound"
+        aria-label={
+          soundOn
+          ? "Disable fireplace sound"
+          : "Enable fireplace sound"
+        }
       >
         {soundOn ? "🔊" : "🔇"}
       </button>
 
-      <div className="fireplace-shell">
+      <section className="fireplace-shell">
         <div className="mantle" />
         <div className="firebox">
           <HeatRefraction />
@@ -124,8 +135,8 @@ function Fireplace()
           <FlameRow count={14} intensity={1.1} blur={0} zIndex={3} phase={-2.4} />
         </div>
         <div className="hearth" />
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
 
