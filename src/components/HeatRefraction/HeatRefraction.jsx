@@ -1,18 +1,20 @@
 //Filename: HeatRefraction.jsx
 //Author: Kyle McColgan
-//Date: 23 January 2026
+//Date: 9 May 2026
 //Description: This file contains the WebGL component for the React Fireplace project.
 
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-export default function HeatRefraction() {
+export default function HeatRefraction()
+{
     const mountRef = useRef(null);
 
-    useEffect(() => {
+    useEffect(() =>
+    {
         const container = mountRef.current;
 
-        if ( ! container)
+        if (!container)
         {
             return;
         }
@@ -25,10 +27,13 @@ export default function HeatRefraction() {
         const renderer = new THREE.WebGLRenderer({
             alpha: true,
             antialias: false,
+            depth: false,
+            stencil: false,
             powerPreference: "high-performance",
         });
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.8));
         renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
         container.appendChild(renderer.domElement);
 
         //Uniforms.
@@ -39,7 +44,7 @@ export default function HeatRefraction() {
             },
         };
 
-        //Material.
+        //Shader Material.
         const material = new THREE.ShaderMaterial({
             transparent: true,
             depthWrite: false,
@@ -53,14 +58,17 @@ export default function HeatRefraction() {
               uniform float uTime;
               uniform vec2 uResolution;
 
-              /* Hash + value noise. */
-              float hash(vec2 p) {
-                  p = fract(p * vec2(127.1, 311.7));
-                  p += dot(p, p + 34.2);
+              /* Hash. */
+              float hash(vec2 p)
+              {
+                  p = fract(p * vec2(234.34, 435.345));
+                  p += dot(p, p + 34.23);
                   return fract(p.x * p.y);
               }
 
-              float noise(vec2 p) {
+              /* Value Noise. */
+              float noise(vec2 p)
+              {
                   vec2 i = floor(p);
                   vec2 f = fract(p);
 
@@ -76,57 +84,72 @@ export default function HeatRefraction() {
               }
 
               /* Fractal Brownian Motion. */
-              float fbm(vec2 p) {
-                float v = 0.0;
-                float a = 0.5;
-                for (int i = 0; i < 4; i ++)
+              float fbm(vec2 p)
+              {
+                float value = 0.0;
+                float amp = 0.5;
+                for (int i = 0; i < 5; i++)
                 {
-                    v += a * noise(p);
+                    value += amp * noise(p);
                     p *= 2.0;
-                    a *= 0.5;
+                    amp *= 0.5;
                 }
-                return v;
+                return value;
               }
 
-              void main() {
+              /* Main. */
+              void main()
+              {
                   vec2 uv = gl_FragCoord.xy / uResolution;
 
-                  /* Horizontal Center Weighting. */
+                  /* Heat Column Shape. */
                   float center = 1.0 - abs(uv.x - 0.5) * 2.0;
-                  center = clamp(center, 0.0, 1.0);
+                  center = smoothstep(0.0, 0.9, center);
 
                   /* Vertical Heat Column. */
-                  float base = smoothstep(0.02, 0.38, uv.y);
-                  float topFade = 1.0 - smoothstep(0.55, 0.95, uv.y);
-                  float heatMask = base * topFade * center;
+                  float lower = smoothstep(0.02, 0.22, uv.y);
+                  float upper = 1.0 - smoothstep(0.52, 0.96, uv.y);
+                  float heatMask = center * lower * upper;
 
                   /* Time. */
-                  float t = uTime * 0.18;
+                  float t = uTime * 0.16;
 
-                  /* Convection Flow. */
-                  vec2 flow = vec2(fbm(uv * 4.0 + t) * 0.05, -t * 0.9);
+                  /* Large Convection Flow. */
+                  vec2 convection = vec2(fbm(uv * 1.4 + vec2(0.0, -t, 0.18)) - 0.5, fbm(uv * 1.1 - vec2(0.0, t * 0.12)));
 
-                  /* Layered Turbulence. */
-                  float nLarge = fbm(uv * 0.5 + flow * 0.6);
-                  float nSmall = fbm(uv * 16.0 - flow * 1.1);
-                  float distortion = (nLarge * 0.6 + nSmall * 0.4) - 0.5;
+                  /* Thermal Turbulence. */
+                  float turbulenceLarge = fbm(uv * 3.0 + convection * 1.2 + vec2(0.0, -t * 0.8));
+                  float turbulenceMedium = fbm(uv * 8.0 - convection * 1.4 + vec2(0.0, -t * 1.4));
+                  float turbulenceFine = fbm(uv * 20.0 + convection * 2.0 + vec2(0.0, -t * 2.6));
 
-                  /* Anisotropic Distortion (Heat Rises). */
-                  vec2 offset = vec2(distortion * 0.018, distortion * 0.05) * heatMask;
+                  /* Distortion Composition. */
+                  float distortion = (turbulenceLarge * 0.55 + turbulenceMedium * 0.32 + turbulenceFine * 0.13) - 0.5;
 
-                  /* Alpha Controls Refraction Strength. */
-                  float alpha = abs(distortion) * heatMask * 0.22;
+                  /* Thermal Pulsing. */
+                  float pulse = 0.94 + sin(uTime * 0.7 + uv.y * 12.0) * 0.06;
+
+                  /* Anisotropic Refraction. */
+                  vec2 offset = vec2(distortion * 0.028, distortion * 0.085) * heatMask * pulse;
+
+                  /* Depth Falloff. */
+                  float fade = smoothstep(0.0, 0.22, uv.y);
+                  fade *= 1.0 - smoothstep(0.74, 1.0, uv.y);
+
+                  /* Final Alpha. */
+                  float alpha = abs(offset.y) * heatMask * fade * 0.16;
                   gl_FragColor = vec4(1.0, 1.0, 1.0, alpha);
               }
             `,
         });
 
+        //Fullscreen Quad.
         const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
         scene.add(quad);
 
         //Animation.
         let raf;
-        const animate = () => {
+        const animate = () =>
+        {
             uniforms.uTime.value += 0.016;
             renderer.render(scene, camera);
             raf = requestAnimationFrame(animate);
@@ -134,19 +157,28 @@ export default function HeatRefraction() {
         animate();
 
         //Resize.
-        const onResize = () => {
-            const w = container.clientWidth;
-            const h = container.clientHeight;
-            renderer.setSize(w, h);
-            uniforms.uResolution.value.set(w, h);
+        const onResize = () =>
+        {
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            renderer.setSize(width, height);
+            uniforms.uResolution.value.set(width, height);
         };
         window.addEventListener("resize", onResize);
 
-        return () => {
+        //Cleanup.
+        return () =>
+        {
             cancelAnimationFrame(raf);
             window.removeEventListener("resize", onResize);
+            quad.geometry.dispose();
+            material.dispose();
             renderer.dispose();
-            container.removeChild(renderer.domElement);
+
+            if (renderer.domElement.parentNode)
+            {
+                renderer.domElement.parentNode.removeChild(renderer.domElement);
+            }
         };
     }, []);
 

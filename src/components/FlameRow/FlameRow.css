@@ -1,52 +1,108 @@
 /* Filename: src/components/FlameRow/FlameRow.css */
 
-/* Flame Row Styles. */
+/* ====================================
+   FLAMEROW STYLES.
+======================================= */
 .flame-row
 {
     position: absolute;
-    bottom: calc(5% + var(--row-blur) * 0.4px);
     left: 50%;
+    bottom: calc(5% + var(--row-blur) * 0.45px);
 
     display: flex;
-    gap: clamp(8px, 2vw, 22px);
+    align-items: flex-end;
+    gap: clamp(4px, 1vw, 16px);
 
     transform: translateX(-50%);
     filter: blur(calc(var(--row-blur) * 1px));
     pointer-events: none;
+    isolation: isolate;
     will-change: transform;
 }
 
-/* FlameRow Individual Flame Styles. */
+/* ====================================
+   FLAMEROW INDIVIDUAL FLAME STYLES.
+======================================= */
 .flame
 {
-    width: calc(14px + var(--flare) * 8px);
-    height: calc(78px + 88px * var(--heat));
+    position: relative;
+    width: calc((16px + (var(--flare) * 8px)) * var(--width));
+    height: calc(82px + (94px * var(--heat)));
 
-    transform-origin: bottom center;
-    transform:
-      translateX(var(--offset))
-      scaleY(var(--scale));
+    transform-origin: center bottom;
+    transform: translateX(var(--offset)) scaleY(var(--scale));
 
-    border-radius: 50% 50% 42% 42% / 72% 72% 36% 36%;
-    opacity: calc(0.58 * var(--heat) * var(--intensity));
+    border-radius: 52% 52% 38% 38% / 76% 76% 28% 28%;
+    opacity: calc(0.54 * var(--heat) * var(--intensity));
     background: radial-gradient(
-        ellipse at bottom,
-        var(--flare-white) 0%,
-        var(--flame-gold) 24%,
-        var(--flame-orange) 50%,
-        rgba(255, 110, 0, 0.18) 70%,
-        rgba(184, 50, 0, 0.12) 85%,
+        ellipse at 50% 88%,
+        rgba(255, 252, 235, 0.96) 0%,
+        rgba(255, 214, 120, 0.96) 14%,
+        rgba(255, 160, 40, 0.92) 34%,
+        rgba(255, 96, 10, 0.66) 58%,
+        rgba(180, 44, 0, 0.22) 78%,
         transparent 100%
     );
 
-    filter: blur(0.9px) brightness(calc(0.92 + var(--heat) * 0.35));
-    will-change: transform, opacity;
+    filter: blur(0.7px) brightness(calc(0.92 + var(--heat) * 0.32));
+    will-change: transform, opacity, filter;
+    mix-blend-mode: screen;
 
     animation-delay: var(--delay);
     animation: flame-flicker
-               calc(2.2s + 1.4s * (1 - var(--heat)))
-               cubic-bezier(0.4, 0, 0.2, 1)
+               var(--duration)
+               cubic-bezier(0.42, 0, 0.22, 1)
                infinite;
+}
+
+/* ====================================
+   FLAMEROW INNER FLAME CORE STYLES.
+======================================= */
+.flame::before
+{
+  content: "";
+  position: absolute;
+
+  left: 50%;
+  bottom: 10%;
+  width: 42%;
+  height: 52%;
+  transform: translateX(-50%);
+
+  border-radius: 50% 50% 40% 40% / 68% 68% 32% 32%;
+  opacity: calc(0.42 + (var(--heat) * 0.2));
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 245, 0.96),
+    rgba(255, 232, 170, 0.82) 42%,
+    rgba(255, 170, 60, 0.12) 82%,
+    transparent 100%
+  );
+
+  filter: blur(2px);
+  mix-blend-mode: screen;
+}
+
+/* ====================================
+   FLAMEROW UPPER HEAT TRAIL STYLES.
+======================================= */
+.flame::before
+{
+  content: "";
+  position: absolute;
+
+  left: 50%;
+  top: -12%;
+  width: 64%;
+  height: 42%;
+  transform: translateX(-50%);
+
+  border-radius: 999px;
+  opacity: calc(0.22 * var(--heat));
+  background: linear-gradient(to top, rgba(255, 180, 80, 0.18), transparent);
+
+  filter: blur(10px);
+  mix-blend-mode: screen;
 }
 
 /* FlameRow Flame Flicker Animations Styles. */
@@ -56,36 +112,46 @@
     {
         transform:
           translateX(var(--offset))
-          scaleY(var(--scale))
-          translateY(0);
+          translateY(0)
+          rotate(-1deg)
+          scaleX(1)
+          scaleY(var(--scale));
     }
-    25%
+    20%
     {
         transform:
-          translateX(calc(var(--offset) + var(--drift)))
-          scaleY(calc(var(--scale) * 1.10))
-          translateY(-2px);
+          translateX(calc(var(--offset) + (var(--sway) * 0.5)))
+          translateY(calc(var(--lift) * -0.24))
+          rotate(1deg)
+          scaleX(0.96)
+          scaleY(calc(var(--scale) * 1.08));
     }
-    50%
+    42%
     {
         transform:
-          translateX(calc(var(--offset) - var(--drift) * 0.6))
-          scaleY(calc(var(--scale) * 0.94))
-          translateY(0.8px);
+          translateX(calc(var(--offset) - (var(--sway) * 0.8)))
+          translateY(calc(var(--lift) * -0.42))
+          rotate(-2deg)
+          scaleX(1.04)
+          scaleY(calc(var(--scale) * 0.92));
     }
-    75%
+    68%
     {
         transform:
-          translateX(calc(var(--offset) + var(--drift) * 0.4))
-          scaleY(calc(var(--scale) * 1.04))
-          translateY(-1px);
+          translateX(calc(var(--offset) + (var(--sway) * 0.3)))
+          translateY(calc(var(--lift) * -0.18))
+          rotate(1deg)
+          scaleX(0.98)
+          scaleY(calc(var(--scale) * 1.04));
     }
     100%
     {
         transform:
           translateX(var(--offset))
-          scaleY(var(--scale))
-          translateY(0);
+          translateY(0)
+          rotate(-1deg)
+          scaleX(1)
+          scaleY(var(--scale));
     }
 }
 

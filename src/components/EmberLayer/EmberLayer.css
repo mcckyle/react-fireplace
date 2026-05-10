@@ -1,27 +1,33 @@
 /* Filename: src/components/EmberLayer/EmberLayer.css */
 
+/* ====================================
+   EMBERLAYER EMBER FIELD STYLES.
+======================================= */
 .embers
 {
     position: absolute;
-    bottom: 4%;
     left: 50%;
-    width: 80vw;
-    max-width: 1200px;
-    height: 120px;
+    bottom: 5%;
+
+    width: min(84vw, 1240px);
+    height: 340px;
 
     transform: translateX(-50%);
     pointer-events: none;
     z-index: 2;
 }
 
-/* EmberLayer Individual Ember Styles. */
+/* ====================================
+   EMBERLAYER INDIVIDUAL EMBER FIELD STYLES.
+======================================= */
 .ember
 {
     position: absolute;
+    left: var(--x);
+    bottom: 0;
+
     width: var(--size);
     height: var(--size);
-    bottom: 0;
-    left: var(--x);
 
     border-radius: 50%;
     transform:
@@ -29,21 +35,44 @@
       scale(calc(var(--cluster) * var(--depth)));
     background: radial-gradient(
         circle at center,
-        rgba(255, 220, 160, calc(0.85 + 0.15 * var(--glow))) 0%,
-        rgba(255, 140, 40, 0.45) 45%,
-        rgba(255, 90, 20, 0.25) 65%,
-        transparent 90%
+        rgba(255, 248, 230, 0.96) 0%,
+        rgba(255, 210, 120, 0.88) 16%,
+        rgba(255, 150, 50, 0.52) 42%,
+        rgba(255, 90, 20, 0.2) 72%,
+        transparent 100%
     );
+    mix-blend-mode: screen;
 
-    filter: blur(calc(0.8px + (1 - var(--depth)) * 1px))
-            brightness(calc(0.85 + var(--depth) * 0.6));
+    filter: blur(var(--blur))
+            brightness(calc(0.82 + (var(--depth) * 0.44)));
     opacity: calc(var(--ember-opacity) * var(--intensity));
-    will-change: transform, opacity;
+    will-change: transform, opacity, filter;
 
     animation-delay: var(--delay);
-    animation: ember-rise calc(7s + var(--rise) * 0.4) linear infinite;
+    animation: ember-rise var(--duration) linear infinite;
 }
 
+/* ====================================
+   EMBERLAYER EMBER GLOW HALO STYLES.
+======================================= */
+.ember::before
+{
+    content: "";
+    position: absolute;
+    inset: -100%;
+
+    border-radius: 50%;
+    background: radial-gradient(
+        circle,
+        rgba(255, 160, 60, 0.26),
+        transparent 72%
+    );
+    mix-blend-mode: screen;
+    filter: blur(4px);
+    opacity: calc(0.16 + (var(--glow) * 0.24));
+}
+
+/* EmberLayer Ember Motion Animation Styles. */
 @keyframes ember-rise
 {
     0%
@@ -54,27 +83,36 @@
            translateY(0)
            scale(calc(var(--cluster) * var(--depth)));
     }
-    15% { opacity: calc(0.9 * var(--ember-opacity)); }
-    40%
+    8% { opacity: calc(0.92 * var(--ember-opacity)); }
+    24%
     {
         transform:
-            translateX(calc(var(--sway) - var(--drift)))
-            translateY(calc(var(--rise) * -0.4))
-            scale(calc(var(--cluster) * var(--depth) * 0.9));
+            translateX(calc(var(--sway) + (var(--drift) * 0.18)))
+            translateY(calc(var(--rise) * -0.18))
+            scale(calc(var(--cluster) * var(--depth) * 1.04));
     }
-    75%
+    52%
     {
+        opacity: calc(0.72 * var(--ember-opacity));
         transform:
-            translateX(calc(var(--sway) - var(--drift) * 0.6)) translateY(calc(var(--rise) * -1.1))
-            scale(calc(var(--cluster) * var(--depth) * 0.6));
+            translateX(calc(var(--sway) - (var(--drift) * 0.44)))
+            translateY(calc(var(--rise) * -0.56))
+            scale(calc(var(--cluster) * var(--depth) * 0.82));
+    }
+    78%
+    {
+        opacity: calc(0.34 * var(--ember-opacity));
+        transform:
+            translateX(calc(var(--sway) + var(--drift) * 0.32)) translateY(calc(var(--rise) * -0.92))
+            scale(calc(var(--cluster) * var(--depth) * 0.42));
     }
     100%
     {
         opacity: 0;
         transform:
-            translateX(calc(var(--sway) + var(--drift) * 0.3))
-            translateY(calc(var(--rise) * -1.6))
-            scale(0.1);
+            translateX(calc(var(--sway) - (var(--drift) * 0.18)))
+            translateY(calc(var(--rise) * -1.22))
+            scale(0.08);
     }
 }
 

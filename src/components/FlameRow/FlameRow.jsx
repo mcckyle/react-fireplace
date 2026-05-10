@@ -1,6 +1,6 @@
 //Filename: FlameRow.jsx
 //Author: Kyle McColgan
-//Date: 16 March 2026
+//Date: 9 May 2026
 //Description: This file contains the FlameRow component for the  Fireplace React project.
 
 import { useMemo } from "react";
@@ -18,15 +18,20 @@ export default function FlameRow({
     {
         return Array.from({ length: count }).map((_, i) =>
         {
-            const t = i / (count - 1);
-            const center = 1 - Math.abs(t - 0.5) * 2; //0 edges -> 1 center.
+            const t = i / Math.max(count - 1, 1);
+            const centerWeight = 1 - Math.abs(t - 0.5) * 2; //0 edges -> 1 center.
+            const heat = 0.82 + Math.random() * 0.38 + centerWeight * 0.42;
             return {
-                scale: (0.9 + Math.random() * 0.3 + center * 0.25).toFixed(3),
-                heat: (0.8 + Math.random() * 0.4 + center * 0.35).toFixed(3),
-                drift: `${(Math.random() * 10 - 5).toFixed(2)}px`,
-                offset: `${(Math.random() * 8 - 4).toFixed(2)}px`,
-                flare: Math.random() > 0.82 ? 1 : 0,
-                delay: `${(-Math.random() * 3 + phase).toFixed(2)}s`,
+                scale: (0.82 + Math.random() * 0.32 + centerWeight * 0.32).toFixed(3),
+                heat: heat.toFixed(3),
+                width: (0.82 + Math.random() * 0.34).toFixed(3),
+                sway: (Math.random() * 18 - 9).toFixed(2),
+                lift: (6 + Math.random() * 16).toFixed(2),
+                offset: (Math.random() * 10 - 5).toFixed(2),
+                flare: Math.random() > 0.84 ? 1 : 0,
+                turbulence: (0.8 + Math.random() * 0.9).toFixed(2),
+                delay: (-Math.random() * 4 + phase).toFixed(2),
+                duration: (2.1 + Math.random() * 1.6).toFixed(2),
             };
         });
     }, [count, phase]);
@@ -47,10 +52,14 @@ export default function FlameRow({
                     style={{
                         "--scale": flame.scale,
                         "--heat": flame.heat,
-                        "--drift": flame.drift,
-                        "--offset": flame.offset,
+                        "--width": flame.width,
+                        "--sway": `${flame.sway}px`,
+                        "--lift": `${flame.lift}px`,
+                        "--offset": `${flame.offset}px`,
                         "--flare": flame.flare,
-                        "--delay": flame.delay,
+                        "--delay": `${flame.delay}s`,
+                        "--duration": `${flame.duration}s`,
+                        "--turbulence": flame.turbulence,
                     }}
                 />
             ))}

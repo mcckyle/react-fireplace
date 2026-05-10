@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 27 April 2026
+//Date: 9 May 2026
 //Description: This file contains the parent component for the Fireplace React project.
 
 import { useEffect, useRef, useState } from "react";
@@ -16,8 +16,9 @@ function Fireplace()
   const rafRef = useRef(null);
   const [soundOn, setSoundOn] = useState(false);
 
-  //Intensity (CSS-driven, not React-driven).
-  useEffect(() => {
+  //Fire Intensity Simulation (CSS-driven, not React-driven).
+  useEffect(() =>
+  {
     let current = 1;
     let target = 1;
     let velocity = 0;
@@ -25,7 +26,7 @@ function Fireplace()
 
     const pickTarget = () =>
     {
-      target = 0.94 + Math.random() * 0.18;
+      target = 0.92 + Math.random() * 0.22;
       lastTargetChange = performance.now();
     };
 
@@ -39,13 +40,14 @@ function Fireplace()
         return;
       }
 
-      if (t - lastTargetChange > 32000)
+      if ((t - lastTargetChange) > (2400 + Math.random() * 2400))
       {
         pickTarget();
       }
 
-      const force = (target - current) * 0.012;
-      velocity = velocity * 0.92 + force;
+      const force = (target - current) * 0.015;
+      velocity *= 0.93;
+      velocity += force;
       current += velocity;
 
       document.documentElement.style.setProperty(
@@ -60,8 +62,9 @@ function Fireplace()
     return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
-  //Audio (RAF fade).
-  useEffect(() => {
+  //Audio fade system (RAF fade).
+  useEffect(() =>
+  {
     const audio = audioRef.current;
     if (!audio)
     {
@@ -70,9 +73,9 @@ function Fireplace()
 
     cancelAnimationFrame(audioFadeRef.current);
 
-    const targetVolume = soundOn ? 0.32 : 0;
+    const targetVolume = soundOn ? 0.34 : 0;
 
-    if ( (soundOn) && (audio.paused))
+    if ((soundOn) && (audio.paused))
     {
       audio.play().catch(() => {});
     }
@@ -92,7 +95,7 @@ function Fireplace()
         return;
       }
 
-      audio.volume += diff * 0.06;
+      audio.volume += diff * 0.05;
       audioFadeRef.current = requestAnimationFrame(fade);
     };
 
@@ -110,6 +113,9 @@ function Fireplace()
         preload="auto"
       />
 
+      <div className="room-vignette" />
+      <div className="room-ambient-light" />
+
       <button
         type="button"
         className="sound-toggle"
@@ -126,13 +132,14 @@ function Fireplace()
       <section className="fireplace-shell">
         <div className="mantle" />
         <div className="firebox">
+          <div className="firebox-reflection" />
           <HeatRefraction />
           <div className="glow" />
           <EmberLayer />
           <div className="logs" />
-          <FlameRow count={4} intensity={0.85} blur={10} zIndex={1} />
+          <FlameRow count={4} intensity={0.84} blur={12} zIndex={1} />
           <FlameRow count={9} intensity={1} blur={5} zIndex={2} phase={-1.2} />
-          <FlameRow count={14} intensity={1.1} blur={0} zIndex={3} phase={-2.4} />
+          <FlameRow count={14} intensity={1.08} blur={0} zIndex={3} phase={-2.4} />
         </div>
         <div className="hearth" />
       </section>
