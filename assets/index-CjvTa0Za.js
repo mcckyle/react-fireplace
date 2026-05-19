@@ -4174,7 +4174,7 @@ void main() {
                   float t = uTime * 0.16;
 
                   /* Large Convection Flow. */
-                  vec2 convection = vec2(fbm(uv * 1.4 + vec2(0.0, -t, 0.18)) - 0.5, fbm(uv * 1.1 - vec2(0.0, t * 0.12)));
+                  vec2 convection = vec2(fbm(uv * 1.4 + vec2(0.0, -t * 0.18)) - 0.5, fbm(uv * 1.1 - vec2(0.0, t * 0.12)));
 
                   /* Thermal Turbulence. */
                   float turbulenceLarge = fbm(uv * 3.0 + convection * 1.2 + vec2(0.0, -t * 0.8));
