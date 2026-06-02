@@ -7,7 +7,7 @@
 {
     position: absolute;
     left: 50%;
-    bottom: calc(5% + var(--row-blur) * 0.45px);
+    bottom: 5%;
 
     display: flex;
     align-items: flex-end;
@@ -17,7 +17,7 @@
     filter: blur(calc(var(--row-blur) * 1px));
     pointer-events: none;
     isolation: isolate;
-    will-change: transform;
+    will-change: auto;
 }
 
 /* ====================================
@@ -27,24 +27,24 @@
 {
     position: relative;
     width: calc((16px + (var(--flare) * 8px)) * var(--width));
-    height: calc(82px + (94px * var(--heat)));
+    height: calc((82px + (94px * var(--heat))) * var(--height));
 
     transform-origin: center bottom;
     transform: translateX(var(--offset)) scaleY(var(--scale));
 
-    border-radius: 52% 52% 38% 38% / 76% 76% 28% 28%;
+    border-radius: 52% 52% 38% 38% / var(--tip) var(--tip) 28% 28%;
     opacity: calc(0.54 * var(--heat) * var(--intensity));
     background: radial-gradient(
-        ellipse at 50% 88%,
-        rgba(255, 252, 235, 0.96) 0%,
-        rgba(255, 214, 120, 0.96) 14%,
-        rgba(255, 160, 40, 0.92) 34%,
+        ellipse at 50% 95%,
+        rgba(255, 255, 245, 0.98) 0%,
+        rgba(255, 215, 120, 0.96) 10%,
+        rgba(255, 150, 40, 0.92) 28%,
         rgba(255, 96, 10, 0.66) 58%,
         rgba(180, 44, 0, 0.22) 78%,
         transparent 100%
     );
 
-    filter: blur(0.7px) brightness(calc(0.92 + var(--heat) * 0.32));
+    filter: blur(0.7px) brightness(calc(0.8 + var(--heat) * 0.48));
     will-change: transform, opacity, filter;
     mix-blend-mode: screen;
 
@@ -86,7 +86,7 @@
 /* ====================================
    FLAMEROW UPPER HEAT TRAIL STYLES.
 ======================================= */
-.flame::before
+.flame::after
 {
   content: "";
   position: absolute;
@@ -122,7 +122,7 @@
         transform:
           translateX(calc(var(--offset) + (var(--sway) * 0.5)))
           translateY(calc(var(--lift) * -0.24))
-          rotate(1deg)
+          rotate(calc(1deg * var(--turbulence)))
           scaleX(0.96)
           scaleY(calc(var(--scale) * 1.08));
     }
@@ -131,7 +131,7 @@
         transform:
           translateX(calc(var(--offset) - (var(--sway) * 0.8)))
           translateY(calc(var(--lift) * -0.42))
-          rotate(-2deg)
+          rotate(calc(-2deg * var(--turbulence)))
           scaleX(1.04)
           scaleY(calc(var(--scale) * 0.92));
     }
@@ -140,7 +140,7 @@
         transform:
           translateX(calc(var(--offset) + (var(--sway) * 0.3)))
           translateY(calc(var(--lift) * -0.18))
-          rotate(1deg)
+          rotate(calc(1deg * var(--turbulence)))
           scaleX(0.98)
           scaleY(calc(var(--scale) * 1.04));
     }

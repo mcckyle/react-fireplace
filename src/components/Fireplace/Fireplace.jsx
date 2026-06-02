@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 9 May 2026
+//Date: 1 June 2026
 //Description: This file contains the parent component for the Fireplace React project.
 
 import { useEffect, useRef, useState } from "react";
@@ -26,7 +26,10 @@ function Fireplace()
 
     const pickTarget = () =>
     {
-      target = 0.92 + Math.random() * 0.22;
+      const surge = Math.random() < 0.12;
+      target = surge
+        ? 1.12 + Math.random() * 0.16
+        : 0.92 + Math.random() * 0.16;
       lastTargetChange = performance.now();
     };
 

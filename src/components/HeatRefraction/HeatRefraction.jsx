@@ -1,6 +1,6 @@
 //Filename: HeatRefraction.jsx
 //Author: Kyle McColgan
-//Date: 9 May 2026
+//Date: 18 May 2026
 //Description: This file contains the WebGL component for the React Fireplace project.
 
 import { useEffect, useRef } from "react";
