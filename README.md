@@ -1,4 +1,4 @@
-# fireplace
+# react-fireplace
 
 ## Features
 1. WebGL displacement map for true refraction.
