@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 1 June 2026
+//Date: 5 June 2026
 //Description: This file contains the parent component for the Fireplace React project.
 
 import { useEffect, useRef, useState } from "react";
@@ -118,6 +118,7 @@ function Fireplace()
 
       <div className="room-vignette" />
       <div className="room-ambient-light" />
+      <div className="room-firelight-projection" />
 
       <button
         type="button"
@@ -139,6 +140,7 @@ function Fireplace()
           <HeatRefraction />
           <div className="glow" />
           <EmberLayer />
+          <div className="coal-bed" />
           <div className="logs" />
           <FlameRow count={4} intensity={0.84} blur={12} zIndex={1} />
           <FlameRow count={9} intensity={1} blur={5} zIndex={2} phase={-1.2} />
