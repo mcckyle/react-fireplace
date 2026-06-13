@@ -11,7 +11,15 @@
   --flame-orange: #ff6a00;
   --flame-gold: #ffd27a;
   --flare-white: #fff3dc;
+
+  /* Fire simulation. */
   --intensity: 1;
+
+  /* Derived lighting channels. */
+  --fire-energy: calc(var(--intensity) * 1);
+  --fire-glow: calc(0.28 + (var(--fire-energy) * 0.22));
+  --fire-shadow: calc(0.35 - (var(--fire-energy) * 0.12));
+  --fire-saturation: calc(1 + (var(--fire-energy) * 0.15));
 }
 
 html { background: #000; }
@@ -41,7 +49,7 @@ html, body
   -webkit-tap-highlight-color: transparent;
   isolation: isolate;
 }
-body { position: fixed; inset: 0; }
+body { min-height: 100dvh; }
 #root { width: 100%; height: 100%; }
 
 /* High-DPI gradient stabilization. */

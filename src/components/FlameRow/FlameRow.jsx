@@ -1,6 +1,6 @@
 //Filename: FlameRow.jsx
 //Author: Kyle McColgan
-//Date: 1 June 2026
+//Date: 12 June 2026
 //Description: This file contains the FlameRow component for the  Fireplace React project.
 
 import { useMemo } from "react";
@@ -20,10 +20,12 @@ export default function FlameRow({
         {
             const t = i / Math.max(count - 1, 1);
             const centerWeight = 1 - Math.abs(t - 0.5) * 2; //0 edges -> 1 center.
-            const heat = 0.82 + Math.random() * 0.38 + centerWeight * 0.42;
+            const temperature = 0.72 + Math.random() * 0.34 + centerWeight * 0.55;
+            const heat = temperature;
             return {
                 scale: (0.82 + Math.random() * 0.32 + centerWeight * 0.32).toFixed(3),
                 heat: heat.toFixed(3),
+                temperature: temperature.toFixed(3),
                 width: (0.68 + Math.random() * 0.58).toFixed(3),
                 height: (0.75 + Math.random() * 0.55).toFixed(3),
                 tip: (34 + Math.random() * 24).toFixed(0),
@@ -54,6 +56,7 @@ export default function FlameRow({
                     style={{
                         "--scale": flame.scale,
                         "--heat": flame.heat,
+                        "--temperature": flame.temperature,
                         "--width": flame.width,
                         "--height": flame.height,
                         "--tip": `${flame.tip}%`,

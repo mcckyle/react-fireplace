@@ -43,8 +43,8 @@
     );
     mix-blend-mode: screen;
 
-    filter: blur(var(--blur))
-            brightness(calc(0.82 + (var(--depth) * 0.44) + (var(--spark)  * 1.4)));
+    filter: blur(calc(var(--blur) * (2 - var(--depth))))
+            brightness(calc(0.7 + var(--temperature) + var(--spark)));
     opacity: calc(var(--ember-opacity) * var(--cooling) * var(--intensity));
     will-change: transform, opacity, filter;
 
@@ -96,7 +96,7 @@
     {
         opacity: calc(0.72 * var(--ember-opacity));
         transform:
-            translateX(calc(var(--sway) - (var(--drift) * 0.44 var(--turbulence))))
+            translateX(calc(var(--sway) - (var(--drift) * 0.44 * var(--turbulence))))
             translateY(calc(var(--rise) * -0.56))
             scale(calc(var(--cluster) * var(--depth) * 0.82));
     }
@@ -111,7 +111,7 @@
     {
         opacity: 0;
         transform:
-            translateX(calc(var(--sway) - (var(--drift) * 0.18 var(--turbulence))))
+            translateX(calc(var(--sway) - (var(--drift) * 0.18 * var(--turbulence))))
             translateY(calc(var(--rise) * -1.22))
             scale(0.08);
     }

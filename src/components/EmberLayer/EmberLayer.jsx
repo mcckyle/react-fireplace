@@ -1,12 +1,12 @@
 //Filename: EmberLayer.jsx
 //Author: Kyle McColgan
-//Date: 1 June 2026
+//Date: 12 June 2026
 //Description: This file contains the EmberLayer component for the Fireplace React project.
 
 import { useMemo } from "react";
 import "./EmberLayer.css";
 
-const EMBER_COUNT = 28;
+const EMBER_COUNT = 22;
 
 export default function EmberLayer()
 {
@@ -33,6 +33,7 @@ export default function EmberLayer()
                 duration: (5.8 + Math.random() * 5.4).toFixed(2),
                 delay: (-Math.random() * 12).toFixed(2),
                 turbulence: (0.8 + Math.random() * 1.6).toFixed(2),
+                temperature: (0.7 + Math.random() * 0.4).toFixed(2),
             };
         });
     }, []);
@@ -59,6 +60,7 @@ export default function EmberLayer()
                         "--duration": `${ember.duration}s`,
                         "--delay": `${ember.delay}s`,
                         "--turbulence": ember.turbulence,
+                        "--temperature": ember.temperature,
                     }}
                 />
             ))}
