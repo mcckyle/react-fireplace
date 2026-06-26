@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 25 June 2026
+//Date: 26 June 2026
 //Description: This file contains the parent component for the Fireplace React project.
 
 import { useEffect, useRef, useState } from "react";
@@ -16,7 +16,7 @@ function Fireplace()
   const rafRef = useRef(null);
   const [soundOn, setSoundOn] = useState(false);
 
-  //Fire Intensity Simulation (CSS-driven, not React-driven).
+  //Fire Intensity Simulation (CSS-driven).
   useEffect(() =>
   {
     let frame;
