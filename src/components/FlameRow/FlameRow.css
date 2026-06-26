@@ -11,13 +11,12 @@
 
     display: flex;
     align-items: flex-end;
-    gap: clamp(4px, 1vw, 16px);
+    gap: clamp(3px, 0.8vw, 12px);
 
     transform: translateX(-50%);
     filter: blur(calc(var(--row-blur) * 1px));
     pointer-events: none;
     isolation: isolate;
-    will-change: auto;
 }
 
 /* ====================================
@@ -26,32 +25,30 @@
 .flame
 {
     position: relative;
-    width: calc((16px + (var(--flare) * 8px)) * var(--width));
-    height: calc((82px + (94px * var(--heat))) * var(--height));
-
+    width: calc(18px * var(--width) * var(--fuel));
+    height: calc(110px * var(--height) * var(--fuel));
     transform-origin: center bottom;
-    transform: translateX(var(--offset)) scale(calc(0.96 + var(--temperature) * .05), var(--scale));
 
-    border-radius: 55% 45% 45% 55% / var(--tip) var(--tip) 22% 22%;
-    opacity: calc(0.54 * var(--heat) * var(--intensity));
+    border-radius: 55% 45% 35% 35% / 80% 80% 20% 20%;
     background: radial-gradient(
-        ellipse at 50% 95%,
-        rgba(255, 255, 255, 0.98) 0%,
-        rgba(255, 225, 150, 0.92) 12%,
-        rgba(255, 155, 45, 0.86) 34%,
-        rgba(255, 80, 0, 0.55) 62%,
+        ellipse at 50% 92%,
+        var(--flare-white) 0%,
+        var(--flame-gold) 18%,
+        var(--flame-orange) 48%,
+        var(--ember-red) 75%,
         transparent 100%
     );
 
-    filter: blur(0.7px) brightness(calc(0.8 + var(--heat) * 0.48));
+    filter: brightness(calc(0.9 + var(--temperature) * 0.45));
+    opacity: calc(0.55 * var(--temperature) * var(--intensity));
     will-change: transform, opacity, filter;
     mix-blend-mode: screen;
 
-    animation-delay: var(--delay);
-    animation: flame-flicker
+    animation: flame-rise
                var(--duration)
-               cubic-bezier(0.42, 0, 0.22, 1)
+               cubic-bezier(0.45, 0, 0.25, 1)
                infinite;
+    animation-delay: var(--delay);
 }
 
 /* ====================================
@@ -63,23 +60,23 @@
   position: absolute;
 
   left: 50%;
-  bottom: 10%;
-  width: 42%;
-  height: 52%;
+  bottom: 8%;
+  width: 38%;
+  height: 55%;
   transform: translateX(-50%);
 
-  border-radius: 50% 50% 40% 40% / 68% 68% 32% 32%;
-  opacity: calc(0.42 + (var(--heat) * 0.2));
+  border-radius: 50%;
   background: radial-gradient(
-    ellipse at center,
-    rgba(255, 255, 245, 0.96),
-    rgba(255, 232, 170, 0.82) 42%,
-    rgba(255, 170, 60, 0.12) 82%,
-    transparent 100%
+    ellipse,
+    #fffdf0,
+    rgba(255, 220, 140, 0.8) 40%,
+    transparent 75%
   );
 
-  filter: blur(2px);
-  mix-blend-mode: screen;
+  filter: blur(3px);
+  opacity: calc(0.45 + var(--temperature) * 0.25);
+
+  animation: core-drift var(--duration) ease-in-out infinite;
 }
 
 /* ====================================
@@ -89,69 +86,46 @@
 {
   content: "";
   position: absolute;
-  inset: -18% -30% -5%;
+  inset: -30%;
 
-  background: radial-gradient(ellipse, rgba(255, 120, 30, 0.22), transparent 68%);
+  background: radial-gradient(circle, rgba(255, 130, 40, 0.35), transparent 70%);
   filter: blur(18px);
-  opacity: calc(0.35 * var(--heat));
-
-  animation: flame-halo 2.8s ease-in-out infinite;
+  opacity: calc(var(--temperature) * 0.35);
 }
 
 /* FlameRow Flame Flicker Animations Styles. */
-@keyframes flame-flicker
+@keyframes flame-rise
 {
-    0%
+    0%, 100%
     {
         transform:
-          translateX(var(--offset))
+          translateX(0)
           translateY(0)
-          rotate(-1deg)
-          scaleX(1)
-          scaleY(var(--scale));
+          rotate(0)
+          scaleY(1);
     }
-    20%
+    35%
     {
         transform:
-          translateX(calc(var(--offset) + (var(--sway) * 0.5)))
-          translateY(calc(var(--lift) * -0.32))
-          rotate(calc(1deg * var(--turbulence)))
-          scaleX(0.96)
-          scaleY(calc(var(--scale) * 1.08));
+          translateX(var(--sway))
+          translateY(calc(var(--lift) * -1))
+          rotate(var(--lean))
+          scaleY(1.08);
     }
-    42%
+    70%
     {
         transform:
-          translateX(calc(var(--offset) - (var(--sway) * 0.8)))
-          translateY(calc(var(--lift) * -0.65))
-          rotate(calc(-2deg * var(--turbulence)))
-          scaleX(1.04)
-          scaleY(calc(var(--scale) * 0.92));
-    }
-    68%
-    {
-        transform:
-          translateX(calc(var(--offset) + (var(--sway) * 0.3)))
-          translateY(calc(var(--lift) * -0.18))
-          rotate(calc(1deg * var(--turbulence)))
-          scaleX(0.98)
-          scaleY(calc(var(--scale) * 1.04));
-    }
-    100%
-    {
-        transform:
-          translateX(var(--offset))
-          translateY(0)
-          rotate(-1deg)
-          scaleX(1)
-          scaleY(var(--scale));
+          translateX(calc(var(--sway) * -0.7))
+          translateY(calc(var(--lift) * -0.55))
+          rotate(calc(var(--lean) * -1))
+          scaleY(0.94);
     }
 }
 
-@keyframes flame-halo
+@keyframes core-drift
 {
-  0%, 100% { transform: scale(0.96); }
-  50% { transform: scale(1.08); }
+  0%, 100% { transform: translateX(-50%) scale(0.9); }
+  50% { transform: translateX(-50%) translateY(-12%) scale(1.1); }
 }
 
 @media (prefers-reduced-motion: reduce)

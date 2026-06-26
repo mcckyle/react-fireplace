@@ -1,7 +1,8 @@
 /* Filename: src/index.css */
 *, *::before, *::after { box-sizing: border-box; }
 
-:root {
+:root
+{
   /* Scene-Referred Luminance Anchors. */
   --black: #000;
   --coal: #0c0704;
@@ -14,12 +15,15 @@
 
   /* Fire simulation. */
   --intensity: 1;
+  --heat: 0.8;
+  --flicker: 1;
 
   /* Derived lighting channels. */
-  --fire-energy: calc(var(--intensity) * 1);
-  --fire-glow: calc(0.28 + (var(--fire-energy) * 0.22));
-  --fire-shadow: calc(0.35 - (var(--fire-energy) * 0.12));
-  --fire-saturation: calc(1 + (var(--fire-energy) * 0.15));
+  --fire-energy: calc(var(--intensity) * var(--heat));
+  --fire-glow: calc(0.32 + (var(--fire-energy) * 0.28));
+  --fire-shadow: calc(0.5 - (var(--fire-energy) * 0.18));
+  --fire-saturation: calc(1 + (var(--fire-energy) * 0.22));
+  --fire-temperature: calc(1 + (var(--flicker) * 0.1));
 }
 
 html { background: #000; }

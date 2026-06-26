@@ -1,6 +1,6 @@
 //Filename: FlameRow.jsx
 //Author: Kyle McColgan
-//Date: 12 June 2026
+//Date: 26 June 2026
 //Description: This file contains the FlameRow component for the  Fireplace React project.
 
 import { useMemo } from "react";
@@ -19,23 +19,20 @@ export default function FlameRow({
         return Array.from({ length: count }).map((_, i) =>
         {
             const t = i / Math.max(count - 1, 1);
-            const centerWeight = 1 - Math.abs(t - 0.5) * 2; //0 edges -> 1 center.
-            const temperature = 0.72 + Math.random() * 0.34 + centerWeight * 0.55;
-            const heat = temperature;
+            const center = 1 - Math.abs(t - 0.5) * 2; //0 edges -> 1 center.
+            const temperature = 0.75 + Math.random() * 0.22 + center * 0.35;
             return {
-                scale: (0.82 + Math.random() * 0.32 + centerWeight * 0.32).toFixed(3),
-                heat: heat.toFixed(3),
+                scale: (0.75 + Math.random() * 0.35 + center * 0.35).toFixed(3),
                 temperature: temperature.toFixed(3),
-                width: (0.68 + Math.random() * 0.58).toFixed(3),
-                height: (0.75 + Math.random() * 0.55).toFixed(3),
-                tip: (34 + Math.random() * 24).toFixed(0),
-                sway: (Math.random() * 18 - 9).toFixed(2),
-                lift: (6 + Math.random() * 16).toFixed(2),
-                offset: (Math.random() * 10 - 5).toFixed(2),
-                flare: Math.random() > 0.84 ? 1 : 0,
-                turbulence: (0.8 + Math.random() * 0.9).toFixed(2),
-                delay: (-Math.random() * 4 + phase).toFixed(2),
-                duration: (1.3 + Math.random() * 1.5).toFixed(2),
+                fuel: (0.75 + Math.random() * 0.45).toFixed(3),
+                width: (0.75 + Math.random() * 0.45).toFixed(3),
+                height: (0.8 + Math.random() * 0.65).toFixed(3),
+                sway: (Math.random() * 20 - 10).toFixed(2),
+                lift: (8 + Math.random() * 18).toFixed(2),
+                lean: (Math.random() * 10 - 5).toFixed(2),
+                turbulence: (0.75 + Math.random() * 0.75).toFixed(2),
+                delay: (-Math.random() * 3 + phase).toFixed(2),
+                duration: (1.1 + Math.random() * 1.4).toFixed(2),
             };
         });
     }, [count, phase]);
@@ -45,7 +42,7 @@ export default function FlameRow({
           className="flame-row"
           style={{
               "--row-blur": blur,
-              "--intensity": intensity.toFixed(3),
+              "--intensity": intensity,
               zIndex
           }}
         >
@@ -55,18 +52,16 @@ export default function FlameRow({
                     className="flame"
                     style={{
                         "--scale": flame.scale,
-                        "--heat": flame.heat,
                         "--temperature": flame.temperature,
+                        "--fuel": flame.fuel,
                         "--width": flame.width,
                         "--height": flame.height,
-                        "--tip": `${flame.tip}%`,
                         "--sway": `${flame.sway}px`,
                         "--lift": `${flame.lift}px`,
-                        "--offset": `${flame.offset}px`,
-                        "--flare": flame.flare,
+                        "--lean": `${flame.lean}deg`,
+                        "--turbulence": flame.turbulence,
                         "--delay": `${flame.delay}s`,
                         "--duration": `${flame.duration}s`,
-                        "--turbulence": flame.turbulence,
                     }}
                 />
             ))}

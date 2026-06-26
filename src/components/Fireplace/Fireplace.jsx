@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 5 June 2026
+//Date: 25 June 2026
 //Description: This file contains the parent component for the Fireplace React project.
 
 import { useEffect, useRef, useState } from "react";
@@ -19,50 +19,52 @@ function Fireplace()
   //Fire Intensity Simulation (CSS-driven, not React-driven).
   useEffect(() =>
   {
-    let current = 1;
+    let frame;
+    let intensity = 1;
     let target = 1;
     let velocity = 0;
-    let lastTargetChange = performance.now();
+    let heat = 0.8;
+    let flicker = 1;
 
-    const pickTarget = () =>
+    const chooseTarget = () =>
     {
-      const surge = Math.random() < 0.12;
-      target = surge
-        ? 1.12 + Math.random() * 0.16
-        : 0.92 + Math.random() * 0.16;
-      lastTargetChange = performance.now();
+      target = Math.random() < 0.1
+        ? 1.15 + Math.random() * 0.12
+        : 0.9 + Math.random() * 0.15;
     };
 
-    pickTarget();
+    chooseTarget();
 
-    const animate = (t) =>
+    let nextShift = performance.now();
+
+    const animate = (time) =>
     {
-      if (document.hidden)
+      if (!document.hidden)
       {
-        rafRef.current = requestAnimationFrame(animate);
-        return;
+        if (time > nextShift)
+        {
+          chooseTarget();
+          nextShift = time + 1800 + Math.random() * 3500;
+        }
+
+        velocity += (target - intensity) * 0.018;
+        velocity *= 0.94;
+        intensity += velocity;
+        flicker = 0.94 + Math.sin(time * 0.018) * 0.035 + Math.random() * 0.025;
+        heat += ((intensity * 0.82) - heat) * 0.015;
+
+        const root = document.documentElement;
+        root.style.setProperty("--intensity", intensity.toFixed(3));
+        root.style.setProperty("--heat", heat.toFixed(3));
+        root.style.setProperty("--flicker", flicker.toFixed(3));
       }
 
-      if ((t - lastTargetChange) > (2400 + Math.random() * 2400))
-      {
-        pickTarget();
-      }
-
-      const force = (target - current) * 0.015;
-      velocity *= 0.93;
-      velocity += force;
-      current += velocity;
-
-      document.documentElement.style.setProperty(
-        "--intensity",
-        current.toFixed(3)
-      );
-      rafRef.current = requestAnimationFrame(animate);
+      frame = requestAnimationFrame(animate);
     };
 
-    rafRef.current = requestAnimationFrame(animate);
+    frame = requestAnimationFrame(animate);
 
-    return () => cancelAnimationFrame(rafRef.current);
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   //Audio fade system (RAF fade).

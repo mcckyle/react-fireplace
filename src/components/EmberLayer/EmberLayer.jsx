@@ -1,12 +1,12 @@
 //Filename: EmberLayer.jsx
 //Author: Kyle McColgan
-//Date: 12 June 2026
+//Date: 26 June 2026
 //Description: This file contains the EmberLayer component for the Fireplace React project.
 
 import { useMemo } from "react";
 import "./EmberLayer.css";
 
-const EMBER_COUNT = 22;
+const EMBER_COUNT = 34;
 
 export default function EmberLayer()
 {
@@ -14,26 +14,24 @@ export default function EmberLayer()
     {
         return Array.from({ length: EMBER_COUNT }).map((_, index) =>
         {
-            const centerBias = 1 - Math.abs((index / EMBER_COUNT) - 0.5) * 2;
-            const spread = 36 + (1 - centerBias) * 28;
-            const largeCluster = Math.random() > 0.93;
+            const position = index / EMBER_COUNT;
+            const center = 1 - Math.abs(position - 0.5) * 2;
+            const temperature = 0.75 + Math.random() * 0.25;
+
             return {
-                x: `${(50 + (Math.random() - 0.5) * spread).toFixed(2)}%`,
-                size: `${(1.2 + Math.random() * 2.8 + centerBias * 0.8).toFixed(2)}px`,
-                rise: `${(80 + Math.random() * 180).toFixed(1)}px`,
-                sway: `${(Math.random() * 10 - 5).toFixed(2)}px`,
-                drift: `${(Math.random() * 32 - 16).toFixed(2)}px`,
-                blur: (0.4 + Math.random() * 1.4).toFixed(2),
-                opacity: (0.24 + Math.random() * 0.58).toFixed(2),
-                cooling: (0.65 + Math.random() * 0.35).toFixed(2),
-                depth: (0.72 + Math.random() * 0.7).toFixed(2),
-                cluster: largeCluster ? 1.8 : 1,
-                glow: Math.random() > 0.8 ? 1 : 0,
-                spark: Math.random() > 0.96 ? 1 : 0,
-                duration: (5.8 + Math.random() * 5.4).toFixed(2),
+                x: `${(50 + (Math.random() - 0.5) * (34 + center * 26)).toFixed(2)}%`,
+                size: `${(1 + Math.random() * 2.4 + center * 1.2).toFixed(2)}px`,
+                rise: `${(90 + Math.random() * 220).toFixed(0)}px`,
+                drift: `${(Math.random() * 50 - 25).toFixed(2)}px`,
+                sway: `${(Math.random() * 12 - 6).toFixed(2)}px`,
+                mass: (0.65 + Math.random() * 0.8).toFixed(2),
+                depth: (0.6 + Math.random() * 0.5).toFixed(2),
+                temperature: temperature.toFixed(2),
+                cooling: (0.55 + Math.random() * 0.45).toFixed(2),
+                glow: Math.random() > 0.78 ? 1 : 0,
+                duration: (5 + Math.random() * 8).toFixed(2),
                 delay: (-Math.random() * 12).toFixed(2),
-                turbulence: (0.8 + Math.random() * 1.6).toFixed(2),
-                temperature: (0.7 + Math.random() * 0.4).toFixed(2),
+                turbulence: (0.8 + Math.random() * 1.5).toFixed(2),
             };
         });
     }, []);
@@ -48,19 +46,16 @@ export default function EmberLayer()
                         "--x": ember.x,
                         "--size": ember.size,
                         "--rise": ember.rise,
-                        "--sway": ember.sway,
                         "--drift": ember.drift,
-                        "--blur": ember.blur,
-                        "--ember-opacity": ember.opacity,
-                        "--cooling": ember.cooling,
+                        "--sway": ember.sway,
+                        "--mass": ember.mass,
                         "--depth": ember.depth,
-                        "--cluster": ember.cluster,
+                        "--temperature": ember.temperature,
+                        "--cooling": ember.cooling,
                         "--glow": ember.glow,
-                        "--spark": ember.spark,
                         "--duration": `${ember.duration}s`,
                         "--delay": `${ember.delay}s`,
                         "--turbulence": ember.turbulence,
-                        "--temperature": ember.temperature,
                     }}
                 />
             ))}
