@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 26 June 2026
+//Date: 8 July 2026
 //Description: This file contains the parent component for the Fireplace React project.
 
 import { useEffect, useRef, useState } from "react";
@@ -11,6 +11,7 @@ import "./Fireplace.css";
 
 function Fireplace()
 {
+  const roomRef = useRef(null);
   const audioRef = useRef(null);
   const audioFadeRef = useRef(null);
   const rafRef = useRef(null);
@@ -53,10 +54,10 @@ function Fireplace()
         flicker = 0.94 + Math.sin(time * 0.018) * 0.035 + Math.random() * 0.025;
         heat += ((intensity * 0.82) - heat) * 0.015;
 
-        const root = document.documentElement;
-        root.style.setProperty("--intensity", intensity.toFixed(3));
-        root.style.setProperty("--heat", heat.toFixed(3));
-        root.style.setProperty("--flicker", flicker.toFixed(3));
+        const room = roomRef.current;
+        room?.style.setProperty("--intensity", intensity.toFixed(3));
+        room?.style.setProperty("--heat", heat.toFixed(3));
+        room?.style.setProperty("--flicker", flicker.toFixed(3));
       }
 
       frame = requestAnimationFrame(animate);
@@ -110,7 +111,7 @@ function Fireplace()
   }, [soundOn]);
 
   return (
-    <main className="room" aria-label="Digital fireplace">
+    <main ref={roomRef} className="room" aria-label="Digital fireplace">
       <audio
         ref={audioRef}
         src="/react-fireplace/audio/fireplace-crackle.mp3"

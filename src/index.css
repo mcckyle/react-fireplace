@@ -1,17 +1,21 @@
 /* Filename: src/index.css */
-*, *::before, *::after { box-sizing: border-box; }
-
 :root
 {
-  /* Scene-Referred Luminance Anchors. */
-  --black: #000;
-  --coal: #0c0704;
+  /* Base Scene. */
+  --scene-black: #000;
+  --scene-shadow: #050301;
+  --scene-coal: #0c0704;
 
   /* Fire energy (OLED-tuned). */
   --ember-red: #b83200;
   --flame-orange: #ff6a00;
   --flame-gold: #ffd27a;
   --flare-white: #fff3dc;
+
+  /* Atmospheric Lighting. */
+  --ambient-orange: rgba(255, 110, 20, 0.18);
+  --ambient-red: rgba(255, 70, 0, 0.08);
+  --ambient-shadow: rgba(0, 0, 0, 0.82);
 
   /* Fire simulation. */
   --intensity: 1;
@@ -20,12 +24,16 @@
 
   /* Derived lighting channels. */
   --fire-energy: calc(var(--intensity) * var(--heat));
-  --fire-glow: calc(0.32 + (var(--fire-energy) * 0.28));
-  --fire-shadow: calc(0.5 - (var(--fire-energy) * 0.18));
-  --fire-saturation: calc(1 + (var(--fire-energy) * 0.22));
-  --fire-temperature: calc(1 + (var(--flicker) * 0.1));
-}
+  --fire-glow: calc(0.32 + var(--fire-energy) * 0.28);
+  --fire-shadow: calc(0.50 - var(--fire-energy) * 0.18);
+  --fire-saturation: calc(1 + var(--fire-energy) * 0.22);
+  --fire-temperature: calc(1 + var(--flicker) * 0.10);
 
+  --transition-slow: 700ms;
+  --transition-medium: 300ms;
+  --transition-fast: 160ms;
+}
+*, *::before, *::after { box-sizing: border-box; }
 html { background: #000; }
 html, body
 {
@@ -39,7 +47,7 @@ html, body
   overflow: hidden;
   overscroll-behavior: none;
 
-  background: #000;
+  background: radial-gradient(circle at center, #140903 0%, #090402 55%, #000 100%);
   color: #fff;
 
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -53,11 +61,17 @@ html, body
   -webkit-tap-highlight-color: transparent;
   isolation: isolate;
 }
-body { min-height: 100dvh; }
-#root { width: 100%; height: 100%; }
+body { position: relative; image-rendering: auto; perspective: 1200px; accent-color: var(--flame-orange); min-height: 100dvh; }
+#root { width: 100%; min-height: 100dvh; isolation: isolate; }
 
-/* High-DPI gradient stabilization. */
-/*@media (min-resolution: 2dppx)
+/* Reduced Motion Media Query Styles. */
+@media (prefers-reduced-motion: reduce)
 {
-  body { background: #000; }
-}*/
+  *, *::before, *::after
+  {
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

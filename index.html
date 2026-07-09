@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#120804" />
+    <meta name="theme-color" content="#090402" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#090402" />
     <meta name="color-scheme" content="dark" />
     <title>Fireplace</title>
     <meta
@@ -17,12 +18,17 @@
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
 
-        <!-- Icons. -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Icons. -->
+    <link rel="preload" href="/images/react-fireplace-favicon-02032026.svg" as="image" type="image/svg+xml" />
     <link rel="icon" href="/images/react-fireplace-favicon-02032026.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/images/react-fireplace-favicon-02032026.png" />
 
     <!-- Prevent White Flash Before CSS Loads. -->
-    <style>html, body { margin: 0; background: #000; }</style>
+    <style>html, body { margin: 0; background: radial-gradient(circle at center, #140903 0%, #090402 60%, #000 100%); }</style>
   </head>
   <body>
     <noscript>

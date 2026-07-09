@@ -41,7 +41,7 @@
 
     filter: brightness(calc(0.9 + var(--temperature) * 0.45));
     opacity: calc(0.55 * var(--temperature) * var(--intensity));
-    will-change: transform, opacity, filter;
+    will-change: transform;
     mix-blend-mode: screen;
 
     animation: flame-rise
