@@ -20,7 +20,6 @@ function Fireplace()
   //Fire Intensity Simulation (CSS-driven).
   useEffect(() =>
   {
-    let frame;
     let intensity = 1;
     let target = 1;
     let velocity = 0;
@@ -48,24 +47,35 @@ function Fireplace()
           nextShift = time + 1800 + Math.random() * 3500;
         }
 
+        const slow = Math.sin(time * 0.0027);
+        const medium = Math.sin(time * 0.011 + 2.1);
+        const fast = (Math.random() - 0.5);
+
         velocity += (target - intensity) * 0.018;
         velocity *= 0.94;
         intensity += velocity;
-        flicker = 0.94 + Math.sin(time * 0.018) * 0.035 + Math.random() * 0.025;
+        flicker = 0.97 + slow * 0.02 + medium * 0.03 + fast * 0.018;
         heat += ((intensity * 0.82) - heat) * 0.015;
 
         const room = roomRef.current;
-        room?.style.setProperty("--intensity", intensity.toFixed(3));
-        room?.style.setProperty("--heat", heat.toFixed(3));
-        room?.style.setProperty("--flicker", flicker.toFixed(3));
+
+        if (room)
+        {
+          room.style.cssText += `
+            --intensity:${intensity.toFixed(3)};
+            --heat:${heat.toFixed(3)};
+            --flicker:${flicker.toFixed(3)};
+          `;
+        }
+
       }
 
-      frame = requestAnimationFrame(animate);
+      rafRef.current = requestAnimationFrame(animate);
     };
 
-    frame = requestAnimationFrame(animate);
+    rafRef.current = requestAnimationFrame(animate);
 
-    return () => cancelAnimationFrame(frame);
+    return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
   //Audio fade system (RAF fade).

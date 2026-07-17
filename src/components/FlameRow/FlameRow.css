@@ -29,7 +29,7 @@
     height: calc(110px * var(--height) * var(--fuel));
     transform-origin: center bottom;
 
-    border-radius: 55% 45% 35% 35% / 80% 80% 20% 20%;
+    border-radius: 58% 42% 34% 46% / 86% 82% 24% 18%;
     background: radial-gradient(
         ellipse at 50% 92%,
         var(--flare-white) 0%,
@@ -43,6 +43,7 @@
     opacity: calc(0.55 * var(--temperature) * var(--intensity));
     will-change: transform;
     mix-blend-mode: screen;
+    backface-visibility: hidden;
 
     animation: flame-rise
                var(--duration)
