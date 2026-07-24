@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 8 July 2026
+//Date: 24 July 2026
 //Description: This file contains the parent component for the Fireplace React project.
 
 import { useEffect, useRef, useState } from "react";
@@ -61,13 +61,10 @@ function Fireplace()
 
         if (room)
         {
-          room.style.cssText += `
-            --intensity:${intensity.toFixed(3)};
-            --heat:${heat.toFixed(3)};
-            --flicker:${flicker.toFixed(3)};
-          `;
+          room.style.setProperty("--intensity", intensity.toFixed(3));
+          room.style.setProperty("--heat", heat.toFixed(3));
+          room.style.setProperty("--flicker", flicker.toFixed(3));
         }
-
       }
 
       rafRef.current = requestAnimationFrame(animate);

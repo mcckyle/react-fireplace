@@ -166,7 +166,7 @@
 .firebox
 {
     position: relative;
-    width: min(100vw, 1500px);
+    width: min(96vw, 1500px);
     height: 440px;
     overflow: hidden;
     isolation: isolate;
