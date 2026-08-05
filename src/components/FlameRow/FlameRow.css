@@ -28,27 +28,29 @@
     width: calc(18px * var(--width) * var(--fuel));
     height: calc(110px * var(--height) * var(--fuel));
     transform-origin: center bottom;
+    transform: scaleX(calc(0.92 + var(--scale) * 0.08)) scaleY(var(--scale));
 
     border-radius: 58% 42% 34% 46% / 86% 82% 24% 18%;
     background: radial-gradient(
-        ellipse at 50% 92%,
+        ellipse at 50% 94%,
         var(--flare-white) 0%,
-        var(--flame-gold) 18%,
-        var(--flame-orange) 48%,
-        var(--ember-red) 75%,
+        var(--flame-core) 7%,
+        var(--flame-hot) 20%,
+        var(--flame-gold) 42%,
+        var(--flame-orange) 66%,
+        var(--ember-red) 88%,
         transparent 100%
     );
 
-    filter: brightness(calc(0.9 + var(--temperature) * 0.45));
+    filter: brightness(calc(0.92 + var(--temperature) * 0.30))
+            contrast(calc(1.04 + var(--temperature) * 0.08))
+            saturate(calc(1.05 + var(--temperature) * 0.20));
     opacity: calc(0.55 * var(--temperature) * var(--intensity));
     will-change: transform;
     mix-blend-mode: screen;
     backface-visibility: hidden;
 
-    animation: flame-rise
-               var(--duration)
-               cubic-bezier(0.45, 0, 0.25, 1)
-               infinite;
+    animation: flame-rise var(--duration) var(--ease-fire) infinite;
     animation-delay: var(--delay);
 }
 
@@ -74,7 +76,7 @@
     transparent 75%
   );
 
-  filter: blur(3px);
+  filter: blur(var(--blur-soft));
   opacity: calc(0.45 + var(--temperature) * 0.25);
 
   animation: core-drift var(--duration) ease-in-out infinite;
@@ -89,8 +91,9 @@
   position: absolute;
   inset: -30%;
 
-  background: radial-gradient(circle, rgba(255, 130, 40, 0.35), transparent 70%);
-  filter: blur(18px);
+  background: radial-gradient(circle, rgba(255, 210, 130, 0.18), transparent 48%),
+              radial-gradient(circle, rgba(255, 120, 30, 0.30), transparent 72%);
+  filter: blur(var(--blur-medium));
   opacity: calc(var(--temperature) * 0.35);
 }
 
@@ -108,25 +111,25 @@
     35%
     {
         transform:
-          translateX(var(--sway))
+          translateX(calc(var(--sway) * var(--turbulence)))
           translateY(calc(var(--lift) * -1))
           rotate(var(--lean))
-          scaleY(1.08);
+          scaleY(calc(1.04 + var(--turbulence) * 0.06));
     }
     70%
     {
         transform:
-          translateX(calc(var(--sway) * -0.7))
+          translateX(calc(var(--sway) * -0.75))
           translateY(calc(var(--lift) * -0.55))
-          rotate(calc(var(--lean) * -1))
-          scaleY(0.94);
+          rotate(calc(var(--lean) * -0.85))
+          scaleY(calc(0.98 - var(--turbulence) * 0.03));
     }
 }
 
 @keyframes core-drift
 {
-  0%, 100% { transform: translateX(-50%) scale(0.9); }
-  50% { transform: translateX(-50%) translateY(-12%) scale(1.1); }
+  0%, 100% { transform: translateX(-50%) scale(0.88); opacity: 0.52; }
+  50% { transform: translateX(-50%) translateY(-10%) scale(1.12); opacity: 0.82; }
 }
 
 @media (prefers-reduced-motion: reduce)

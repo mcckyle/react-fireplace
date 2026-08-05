@@ -12,29 +12,23 @@
     overflow: hidden;
     perspective: 1800px;
     perspective-origin: center 80%;
+    color-scheme: dark;
+    isolation: isolate;
 
     display: flex;
     align-items: flex-end;
     justify-content: center;
     background: radial-gradient(
-        ellipse at center bottom,
-        #2b1407,
-        #0d0502 55%,
-        #000 100%
-    ),
-    linear-gradient(
-        to bottom,
-        rgba(255, 160, 90, 0.02),
-        transparent 30%
+        ellipse 130% 70% at 50% 108%,
+        rgba(255, 130, 40, 0.20),
+        transparent 38%
     ),
     radial-gradient(
-        ellipse at 50% 100%,
-        rgba(255, 120, 35, 0.16),
-        transparent 42%
-    );
-
-    color-scheme: dark;
-    isolation: isolate;
+        ellipse 160% 120% at 50% 120%,
+        rgba(255, 90, 20, 0.08),
+        transparent 62%
+    ),
+    linear-gradient(to bottom, #110906, #060302 48%, #000);
 }
 .room-vignette
 {
@@ -62,7 +56,7 @@
         transparent 60%
       );
     opacity: var(--fire-glow);
-    filter: blur(120px) saturate(var(--fire-saturation));
+    filter: blur(var(--blur-bloom)) saturate(var(--fire-saturation));
     mix-blend-mode: screen;
     pointer-events: none;
     will-change: transform, opacity, filter;
@@ -183,6 +177,21 @@
                 inset 0 -70px 120px rgba(255, 80, 10, 0.18),
                 0 36px 60px rgba(0, 0, 0, 0.45);
 }
+.firebox::before
+{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        circle at 50% 130%,
+        rgba(255, 140, 60, 0.08),
+        transparent 48%
+    ),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02), transparent 24%);
+    mix-blend-mode: screen;
+    opacity: calc(0.25 + var(--fire-luminance) * 0.30);
+    pointer-events: none;
+}
 .firebox-reflection
 {
     position: absolute;
@@ -254,7 +263,8 @@
     left: 50%;
     bottom: 5%;
 
-    transform: translateX(-50%);
+    transform: translateX(-50%) scale(calc(0.995 + var(--fire-energy) * 0.01));
+    filter: brightness(calc(0.82 + var(--fire-energy) * 0.18)) contrast(1.08);
     width: min(82vw, 1240px);
     height: 74px;
     border-radius: 40px;
@@ -284,8 +294,8 @@
       radial-gradient(circle at 30% 50%, rgba(255, 90, 30, 0.22), transparent 56%),
       radial-gradient(circle at 72% 56%, rgba(255, 140, 40, 0.16), transparent 60%);
     mix-blend-mode: screen;
-    opacity: calc(0.3 + var(--fire-energy) * 0.28);
-    filter: blur(4px);
+    opacity: calc(0.22 + var(--fire-energy) * 0.40);
+    filter: blur(6px) saturate(1.45);
 }
 
 /* ====================================

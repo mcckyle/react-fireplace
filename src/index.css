@@ -28,8 +28,12 @@
   --oxygen: 1;
   --flicker: 1;
 
-  /* Derived lighting channels. */
+  /* Primary lighting channels. */
   --fire-energy: calc(var(--intensity) * var(--heat));
+  --fire-luminance: calc(0.18 + var(--fire-energy) * 0.82);
+  --fire-bloom: calc(1 + var(--fire-energy) * 0.35);
+  --fire-depth: calc(1 - (var(--fire-energy) * 0.18));
+  --fire-contrast: calc(1 + var(--flicker) * 0.06);
   --fire-glow: calc(0.32 + var(--fire-energy) * 0.28);
   --fire-shadow: calc(0.50 - var(--fire-energy) * 0.18);
   --fire-saturation: calc(1 + var(--fire-energy) * 0.22);

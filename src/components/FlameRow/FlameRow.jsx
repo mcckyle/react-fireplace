@@ -1,7 +1,7 @@
 //Filename: FlameRow.jsx
 //Author: Kyle McColgan
-//Date: 26 June 2026
-//Description: This file contains the FlameRow component for the  Fireplace React project.
+//Date: 4 August 2026
+//Description: This file contains the FlameRow component for the Fireplace React project.
 
 import { useMemo } from "react";
 import "./FlameRow.css";
@@ -21,18 +21,20 @@ export default function FlameRow({
             const t = i / Math.max(count - 1, 1);
             const center = 1 - Math.abs(t - 0.5) * 2; //0 edges -> 1 center.
             const temperature = 0.75 + Math.random() * 0.22 + center * 0.35;
+            const energy = 0.70 + Math.random() * 0.30 + center * 0.35;
             return {
-                scale: (0.75 + Math.random() * 0.35 + center * 0.35).toFixed(3),
-                temperature: temperature.toFixed(3),
-                fuel: (0.75 + Math.random() * 0.45).toFixed(3),
-                width: (0.75 + Math.random() * 0.45).toFixed(3),
-                height: (0.8 + Math.random() * 0.65).toFixed(3),
-                sway: (Math.random() * 20 - 10).toFixed(2),
-                lift: (8 + Math.random() * 18).toFixed(2),
-                lean: (Math.random() * 10 - 5).toFixed(2),
-                turbulence: (0.75 + Math.random() * 0.75).toFixed(2),
+                energy: energy.toFixed(3),
+                scale: (0.82 + energy * 0.38).toFixed(3),
+                temperature: (0.78 + energy * 0.34).toFixed(3),
+                fuel: (0.82 + energy * 0.24).toFixed(3),
+                width: (0.82 + energy * 0.26).toFixed(3),
+                height: (0.72 + energy * 0.70).toFixed(3),
+                sway: ((Math.random() * 18) - 9).toFixed(2),
+                lift: (8 + energy * 22).toFixed(2),
+                lean: ((Math.random() * 10) - 5).toFixed(2),
+                turbulence: (0.85 + energy * 0.55).toFixed(2),
                 delay: (-Math.random() * 3 + phase).toFixed(2),
-                duration: (1.1 + Math.random() * 1.4).toFixed(2),
+                duration: (1.15 + (1.35 - energy * 0.35)).toFixed(2),
             };
         });
     }, [count, phase]);
@@ -51,6 +53,7 @@ export default function FlameRow({
                     key={index}
                     className="flame"
                     style={{
+                        "--energy": flame.energy,
                         "--scale": flame.scale,
                         "--temperature": flame.temperature,
                         "--fuel": flame.fuel,

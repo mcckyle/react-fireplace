@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 24 July 2026
+//Date: 4 August 2026
 //Description: This file contains the parent component for the Fireplace React project.
 
 import { useEffect, useRef, useState } from "react";
@@ -49,12 +49,12 @@ function Fireplace()
 
         const slow = Math.sin(time * 0.0027);
         const medium = Math.sin(time * 0.011 + 2.1);
-        const fast = (Math.random() - 0.5);
+        const fast = Math.sin(time * 0.047 + 5.7) * 0.55 + Math.sin(time * 0.091 + 2.8) * 0.45;
 
         velocity += (target - intensity) * 0.018;
         velocity *= 0.94;
         intensity += velocity;
-        flicker = 0.97 + slow * 0.02 + medium * 0.03 + fast * 0.018;
+        flicker = 0.98 + slow * 0.02 + medium * 0.025 + fast * 0.015;
         heat += ((intensity * 0.82) - heat) * 0.015;
 
         const room = roomRef.current;
