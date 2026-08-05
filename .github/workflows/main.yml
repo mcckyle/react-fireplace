@@ -1,3 +1,8 @@
+#Filename: main.yml
+#Author: Kyle McColgan
+#Date: 4 August 2026
+#Description: This file contains the GitHub Actions workflow for the GitHub Pages deployment process.
+
 name: main
 
 on:
@@ -14,12 +19,13 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
+    - name: Use Node.js
+      uses: actions/setup-node@v3
       with:
-        node-version: '22'
+        node-version: '24'
+        cache: 'npm'
 
     - name: Install dependencies
       run: npm install
