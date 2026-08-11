@@ -3,45 +3,47 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#090402" media="(prefers-color-scheme: dark)" />
-    <meta name="theme-color" content="#090402" />
+    <meta name="theme-color" content="#050201" />
     <meta name="color-scheme" content="dark" />
     <title>Fireplace</title>
     <meta
       name="description"
-      content="A modern full-screen digital fireplace with cinematic flames and realistic ember motion."
+      content="A cinematic full-screen digital fireplace with realistic flames and glowing embers."
     />
 
     <!-- Open Graph. -->
     <meta property="og:title" content="Fireplace" />
-    <meta property="og:description" content="A modern full-screen digital fireplace with cinematic flames and ambient realism." />
+    <meta property="og:description" content="A cinematic full-screen digital fireplace with realistic flames and glowing embers." />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
 
+    <!-- Mobile / PWA Behavior. -->
+    <meta name="application-name" content="Fireplace" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta name="robots" content="index, follow" />
-    <meta name="application-name" content="Fireplace" />
 
     <!-- Icons. -->
     <link rel="icon" href="/react-fireplace/images/react-fireplace-favicon-02032026.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/images/react-fireplace-favicon-02032026.png" />
 
     <!-- Prevent White Flash Before CSS Loads. -->
-    <style>html, body { margin: 0; background: radial-gradient(ellipse at 50% 82%, #1b0b03 0%, #110703 22%, #090402 54%, #030201 78%, #000 100%); }</style>
-    <script type="module" crossorigin src="/react-fireplace/assets/index-CZqQxLRU.js"></script>
-    <link rel="stylesheet" crossorigin href="/react-fireplace/assets/index-Cryyv8Ww.css">
+    <style>:root { color-scheme: dark; background: #050201; } html, body { margin: 0; min-width: 100%; min-height: 100%; background: radial-gradient(90% 58% at 50% 86%, #1a0802 0%, #0d0401 36%, #050201 70%, #000 100%); }</style>
+    <script type="module" crossorigin src="/react-fireplace/assets/index-CRETIy5Y.js"></script>
+    <link rel="stylesheet" crossorigin href="/react-fireplace/assets/index-PLVPp65V.css">
   </head>
   <body>
     <noscript>
-      <div class="noscript-message">
-        <h1>Fireplace</h1>
-        <p style="color: #ccc; text-align: center; padding: 2rem; font-family: system-ui, sans-serif;">
-          This digital fireplace uses modern web technologies that require JavaScript.
-        </p>
+      <div style="min-height: 100vh; display: grid; place-items: center; padding: 2rem; box-sizing: border-box; background: #050201; color: #fff; font-family: system-ui, sans-serif; text-align: center;">
+        <div>
+          <h1>Fireplace</h1>
+          <p>
+            This digital fireplace requires JavaScript to create its animated fire and ambient effects.
+          </p>
+        </div>
       </div>
     </noscript>
     <div id="root" role="application"></div>
