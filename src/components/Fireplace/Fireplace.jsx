@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 4 August 2026
+//Date: 10 August 2026
 //Description: This file contains the parent component for the Fireplace React project.
 
 import { useEffect, useRef, useState } from "react";
@@ -14,107 +14,185 @@ function Fireplace()
   const roomRef = useRef(null);
   const audioRef = useRef(null);
   const audioFadeRef = useRef(null);
-  const rafRef = useRef(null);
+  const simulationRef = useRef(null);
   const [soundOn, setSoundOn] = useState(false);
 
-  //Fire Intensity Simulation (CSS-driven).
+  /*
+   * Fire Simulation
+   *
+   * The simulation intentionally combines:
+   * - slow energy drift
+   * - medium-scale turbulence
+   * - high-frequence flame flicker
+   *
+   * CSS consumes the resulting variables while the individual
+   * visual components remain responsible for their own geometry.
+   */
   useEffect(() =>
   {
+    const room = roomRef.current;
+
+    if (!room)
+    {
+      return undefined;
+    }
+
     let intensity = 1;
     let target = 1;
     let velocity = 0;
     let heat = 0.8;
     let flicker = 1;
 
+    let nextShift = performance.now();
+    let frameId = null;
+
     const chooseTarget = () =>
     {
-      target = Math.random() < 0.1
-        ? 1.15 + Math.random() * 0.12
-        : 0.9 + Math.random() * 0.15;
+      /*
+       * Most fire movement stays close to equilibrium.
+       * Occasionally allow a stronger flare so the scene
+       * feels organic rather than mechanically periodic.
+       */
+      target = Math.random() < 0.08
+        ? 1.12 + Math.random() * 0.14
+        : 0.91 + Math.random() * 0.12;
+    };
+
+    const update = (time) =>
+    {
+      if (document.hidden)
+      {
+        frameId = null;
+        return;
+      }
+
+      if (time >= nextShift)
+      {
+        chooseTarget();
+        nextShift = time + 1600 + Math.random() * 3600;
+      }
+
+      /*
+       * Multiple frequencies prevent the fire from having
+       * an obvious repeating animation cycle.
+       */
+       const slow = Math.sin(time * 0.0024);
+       const medium = Math.sin(time * 0.0105 + 2.15);
+       const turbulence = Math.sin(time * 0.041 + 5.4) * 0.55 +
+                          Math.sin(time * 0.083 + 2.7) * 0.45;
+       /*
+        * Spring-like energy movement.
+        *
+        * This is deliberately damped so intensity changes
+        * feel like fire breathing rather than UI animation.
+        */
+        velocity += (target - intensity) * 0.017;
+        velocity *= 0.935;
+        intensity += velocity;
+
+       /*
+        * Keep the high-frequence flicker restrained.
+        * Realistic fire should feel alive without making
+        * the entire room pulse aggressively.
+        */
+        flicker = 0.985 + slow * 0.018 + medium * 0.022 + turbulence * 0.012;
+
+        /*
+         * Heat follows intensity more slowly than luminance.
+         * This creates the impression of thermal inertia.
+         */
+        const targetHeat = 0.72 + intensity * 0.012;
+        heat += (targetHeat - heat) * 0.014;
+
+        room.style.setProperty("--intensity", intensity.toFixed(3));
+        room.style.setProperty("--heat", heat.toFixed(3));
+        room.style.setProperty("--flicker", flicker.toFixed(3));
+
+        frameId = requestAnimationFrame(update);
+    };
+
+    const resume = () =>
+    {
+      if (frameId === null)
+      {
+        frameId = requestAnimationFrame(update);
+      }
     };
 
     chooseTarget();
 
-    let nextShift = performance.now();
+    frameId = requestAnimationFrame(update);
 
-    const animate = (time) =>
+    document.addEventListener("visibilitychange", resume);
+
+    return () =>
     {
-      if (!document.hidden)
+      if (frameId !== null)
       {
-        if (time > nextShift)
-        {
-          chooseTarget();
-          nextShift = time + 1800 + Math.random() * 3500;
-        }
-
-        const slow = Math.sin(time * 0.0027);
-        const medium = Math.sin(time * 0.011 + 2.1);
-        const fast = Math.sin(time * 0.047 + 5.7) * 0.55 + Math.sin(time * 0.091 + 2.8) * 0.45;
-
-        velocity += (target - intensity) * 0.018;
-        velocity *= 0.94;
-        intensity += velocity;
-        flicker = 0.98 + slow * 0.02 + medium * 0.025 + fast * 0.015;
-        heat += ((intensity * 0.82) - heat) * 0.015;
-
-        const room = roomRef.current;
-
-        if (room)
-        {
-          room.style.setProperty("--intensity", intensity.toFixed(3));
-          room.style.setProperty("--heat", heat.toFixed(3));
-          room.style.setProperty("--flicker", flicker.toFixed(3));
-        }
+        cancelAnimationFrame(frameId);
       }
-
-      rafRef.current = requestAnimationFrame(animate);
+      document.removeEventListener("visibilitychange", resume);
     };
-
-    rafRef.current = requestAnimationFrame(animate);
-
-    return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
   //Audio fade system (RAF fade).
   useEffect(() =>
   {
     const audio = audioRef.current;
+
     if (!audio)
     {
-        return;
+        return undefined;
     }
 
-    cancelAnimationFrame(audioFadeRef.current);
+    if (audioFadeRef.current !== null)
+    {
+      cancelAnimationFrame(audioFadeRef.current);
+    }
 
     const targetVolume = soundOn ? 0.34 : 0;
 
     if ((soundOn) && (audio.paused))
     {
-      audio.play().catch(() => {});
+      audio.volume = Math.min(audio.volume, targetVolume);
+      audio.play().catch(() =>
+      {
+        setSoundOn(false);
+      });
     }
 
     const fade = () =>
     {
-      const diff = targetVolume - audio.volume;
+      const current = audio.volume;
+      const difference = targetVolume - current;
 
-      if (Math.abs(diff) < 0.005)
+      if (Math.abs(difference) < 0.004)
       {
         audio.volume = targetVolume;
 
         if (targetVolume === 0)
         {
           audio.pause();
+          audio.currentTime = 0;
         }
+
+        audioFadeRef.current = null;
         return;
       }
 
-      audio.volume += diff * 0.05;
+      audio.volume = current + difference * 0.08;
       audioFadeRef.current = requestAnimationFrame(fade);
     };
 
-    fade();
+    audioFadeRef.current = requestAnimationFrame(fade);
 
-    return () => cancelAnimationFrame(audioFadeRef.current);
+    return () =>
+    {
+      if (audioFadeRef.current !== null)
+      {
+        cancelAnimationFrame(audioFadeRef.current);
+      }
+    };
   }, [soundOn]);
 
   return (
@@ -124,39 +202,54 @@ function Fireplace()
         src="/react-fireplace/audio/fireplace-crackle.mp3"
         loop
         preload="auto"
+        aria-hidden="true"
       />
 
-      <div className="room-vignette" />
-      <div className="room-ambient-light" />
-      <div className="room-firelight-projection" />
-
+      <div className="room-ambient-light" aria-hidden="true" />
+      <div className="room-firelight-projection" aria-hidden="true" />
+      <div className="room-vignette" aria-hidden="true" />
       <button
         type="button"
         className="sound-toggle"
-        onClick={() => setSoundOn((v) => ! v)}
+        onClick={() => setSoundOn((value) => !value)}
         aria-label={
           soundOn
           ? "Disable fireplace sound"
           : "Enable fireplace sound"
         }
+        aria-pressed={soundOn}
       >
-        {soundOn ? "🔊" : "🔇"}
+        <svg className="sound-icon" viewBox="0 0 24 24" aria-hidden="true">
+          {soundOn ? (
+            <>
+              <path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor" />
+              <path d="M16 9.5c1.1 1.1 1.1 3.9 0 5" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+              <path d="M18.5 7c2.4 2.5 2.4 7.5 0 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </>
+          ) : (
+            <>
+              <path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor" />
+              <path d="m17 9-5 6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+              <path d="m12 9 5 6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+            </>
+          )}
+        </svg>
       </button>
 
       <section className="fireplace-shell">
-        <div className="mantle" />
+        <div className="mantle" aria-hidden="true" />
         <div className="firebox">
-          <div className="firebox-reflection" />
+          <div className="firebox-reflection" aria-hidden="true" />
           <HeatRefraction />
-          <div className="glow" />
+          <div className="glow" aria-hidden="true" />
           <EmberLayer />
-          <div className="coal-bed" />
-          <div className="logs" />
+          <div className="coal-bed" aria-hidden="true" />
+          <div className="logs" aria-hidden="true" />
           <FlameRow count={4} intensity={0.84} blur={12} zIndex={1} />
           <FlameRow count={9} intensity={1} blur={5} zIndex={2} phase={-1.2} />
           <FlameRow count={14} intensity={1.08} blur={0} zIndex={3} phase={-2.4} />
         </div>
-        <div className="hearth" />
+        <div className="hearth" aria-hidden="true" />
       </section>
     </main>
   );

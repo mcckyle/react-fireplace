@@ -7,15 +7,16 @@
 {
     position: absolute;
     left: 50%;
-    bottom: 4%;
+    bottom: 3%;
 
-    width: min(84vw, 1200px);
-    height: 380px;
-
+    width: min(86%, 1240px);
+    height: min(390px, 72%);
     transform: translateX(-50%);
+
     pointer-events: none;
     z-index: 2;
     overflow: visible;
+    isolation: isolate;
 }
 
 /* ====================================
@@ -36,18 +37,19 @@
         circle,
         var(--flare-white) 0%,
         var(--flame-hot) 12%,
-        var(--flame-gold) 34%,
-        var(--flame-orange) 58%,
-        var(--ember-red) 82%,
+        var(--flame-gold) 32%,
+        var(--flame-orange) 56%,
+        var(--ember-red) 80%,
         transparent 100%
     );
     mix-blend-mode: screen;
 
-    filter: blur(calc((1 - var(--depth)) * var(--blur-soft)))
-            brightness(calc(0.86 + var(--temperature) * 0.24))
+    filter: blur(calc((1 - var(--depth)) * 4px))
+            brightness(calc(0.84 + var(--temperature) * 0.25))
             contrast(calc(1.02 + var(--temperature) * 0.10))
-            saturate(calc(1.08 + var(--temperature) * 0.20));
-    opacity: calc(var(--temperature) * var(--cooling) * var(--fire-energy));
+            saturate(calc(1.05 + var(--temperature) * 0.22));
+    opacity: calc(var(--temperature) * var(--cooling) * var(--fire-energy) * 0.86);
+    mix-blend-mode: screen;
     backface-visibility: hidden;
     will-change: transform, opacity, filter;
 
@@ -62,22 +64,19 @@
 {
     content: "";
     position: absolute;
-    inset: -120%;
+    inset: calc(var(--size) * -2.6);
 
     border-radius: 50%;
     background: radial-gradient(
         circle,
-        rgba(255, 220, 160, 0.16),
-        transparent 45%
-    ),
-    radial-gradient(
-        circle,
-        rgba(255, 130, 40, 0.34),
+        rgba(255, 230, 175, 0.14) 0%,
+        rgba(255, 153, 55, 0.18) 28%,
+        rgba(255, 94, 20, 0.08) 52%,
         transparent 72%
     );
 
-    filter: blur(calc(var(--blur-soft) * 0.60));
-    opacity: calc(var(--glow) * var(--temperature));
+    filter: blur(4px);
+    opacity: calc(var(--glow) * var(--temperature) * 0.72);
     pointer-events: none;
 }
 
@@ -88,35 +87,35 @@
     {
          opacity: 0;
          transform:
-           translate(0, 0)
+           translate3d(0, 0, 0)
            scale(var(--mass));
     }
-    12% { opacity: calc(var(--temperature) * 0.90); }
-    40%
+    9% { opacity: calc(var(--temperature) * var(--cooling) * 0.92); }
+    28%
     {
         transform:
-            translateX(calc(var(--drift) * 0.35 * var(--turbulence)))
-            translateY(calc(var(--rise) * -0.45))
-            scale(calc(var(--mass) * 1.08));
+            translate3d(calc(var(--drift) * 0.18 * var(--turbulence)), calc(var(--rise) * -0.22), 0)
+            scale(calc(var(--mass) * 1.04));
+    }
+    52%
+    {
+        transform:
+            translate3d(calc(var(--drift) * 0.48 * var(--turbulence)), calc(var(--rise) * -0.55), 0)
+            scale(calc(var(--mass) * 0.88));
     }
     78%
     {
-        opacity: 0.28;
-        filter: blur(calc((1 - var(--depth)) * var(--blur-soft)))
-                brightness(0.82)
-                saturate(0.82);
+        opacity: 0.26;
         transform:
-            translateX(calc(var(--drift)))
-            translateY(calc(var(--rise) * -0.9))
-            scale(0.45);
+            translate3d(calc(var(--drift) * 0.82), calc(var(--rise) * -0.80), 0)
+            scale(0.58);
     }
     100%
     {
         opacity: 0;
         transform:
-            translateX(calc(var(--drift) * var(--turbulence)))
-            translateY(calc(var(--rise) * -0.90))
-            scale(0.45);
+            translate3d(calc(var(--drift) * var(--turbulence)), calc(var(--rise) * -0.94), 0)
+            scale(0.34);
     }
 }
 
