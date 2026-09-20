@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 10 August 2026
+//Date: 19 September 2026
 //Description: This file contains the parent component for the Fireplace React project.
 
 import { useEffect, useRef, useState } from "react";
@@ -50,8 +50,7 @@ function Fireplace()
     {
       /*
        * Most fire movement stays close to equilibrium.
-       * Occasionally allow a stronger flare so the scene
-       * feels organic rather than mechanically periodic.
+       * Occasionally stronger flares keep the fire organic.
        */
       target = Math.random() < 0.08
         ? 1.12 + Math.random() * 0.14
@@ -73,8 +72,7 @@ function Fireplace()
       }
 
       /*
-       * Multiple frequencies prevent the fire from having
-       * an obvious repeating animation cycle.
+       * Multiple frequencies prevent an obvious repeating cycle.
        */
        const slow = Math.sin(time * 0.0024);
        const medium = Math.sin(time * 0.0105 + 2.15);
@@ -101,8 +99,8 @@ function Fireplace()
          * Heat follows intensity more slowly than luminance.
          * This creates the impression of thermal inertia.
          */
-        const targetHeat = 0.72 + intensity * 0.012;
-        heat += (targetHeat - heat) * 0.014;
+        const targetHeat = 0.68 + intensity * 0.12;
+        heat += (targetHeat - heat) * 0.012;
 
         room.style.setProperty("--intensity", intensity.toFixed(3));
         room.style.setProperty("--heat", heat.toFixed(3));
@@ -113,7 +111,7 @@ function Fireplace()
 
     const resume = () =>
     {
-      if (frameId === null)
+      if ((!document.hidden) && (frameId === null))
       {
         frameId = requestAnimationFrame(update);
       }
@@ -245,9 +243,11 @@ function Fireplace()
           <EmberLayer />
           <div className="coal-bed" aria-hidden="true" />
           <div className="logs" aria-hidden="true" />
-          <FlameRow count={4} intensity={0.84} blur={12} zIndex={1} />
-          <FlameRow count={9} intensity={1} blur={5} zIndex={2} phase={-1.2} />
-          <FlameRow count={14} intensity={1.08} blur={0} zIndex={3} phase={-2.4} />
+          <div className="flame-stage" aria-hidden="true">
+            <FlameRow count={5} intensity={0.88} blur={12} zIndex={1} />
+            <FlameRow count={11} intensity={1.02} blur={5} zIndex={2} phase={-1.2} />
+            <FlameRow count={17} intensity={1.10} blur={0} zIndex={3} phase={-2.4} />
+          </div>
         </div>
         <div className="hearth" aria-hidden="true" />
       </section>
