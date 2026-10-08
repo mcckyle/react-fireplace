@@ -81,7 +81,7 @@ body
   overflow: hidden;
   overscroll-behavior: none;
 
-  background: radial-gradient(90% 58% at 50% 86%, #1a0802 0%, #0d0401 36%, #050201 70%, #000 100%);
+  background: radial-gradient(90% 58% at 50% 86%, #190702 0%, #0c0301 38%, #040201 72%, #000000 100%);
   color: #ffffff;
 
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;

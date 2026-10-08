@@ -1,6 +1,6 @@
 //Filename: HeatRefraction.jsx
 //Author: Kyle McColgan
-//Date: 26 June 2026
+//Date: 8 October 2026
 //Description: This file contains the WebGL component for the React Fireplace project.
 
 import { useEffect, useRef } from "react";
@@ -16,10 +16,12 @@ export default function HeatRefraction()
 
         if (!container)
         {
-            return;
+            return undefined;
         }
 
         //Scene Setup.
+        const room = container.closest(".room");
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
         const scene = new THREE.Scene();
         const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
@@ -31,7 +33,7 @@ export default function HeatRefraction()
             stencil: false,
             powerPreference: "high-performance",
         });
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.8));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
         renderer.setSize(container.clientWidth, container.clientHeight);
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         container.appendChild(renderer.domElement);
@@ -39,7 +41,7 @@ export default function HeatRefraction()
         //Uniforms.
         const uniforms = {
             uTime: { value: 0 },
-            uHeat: { value: 1 },
+            uHeat: { value: 0.8 },
             uResolution: {
                 value: new THREE.Vector2(container.clientWidth, container.clientHeight),
             },
@@ -75,9 +77,9 @@ export default function HeatRefraction()
                   vec2 f = fract(p);
 
                   float a = hash(i);
-                  float b = hash(i + vec2(1, 0));
-                  float c = hash(i + vec2(0, 1));
-                  float d = hash(i + vec2(1, 1));
+                  float b = hash(i + vec2(1.0, 0.0));
+                  float c = hash(i + vec2(0.0, 1.0));
+                  float d = hash(i + vec2(1.0, 1.0));
 
                   vec2 u = f * f * (3.0 - 2.0 * f);
                   return mix(a, b, u.x) +
@@ -90,7 +92,7 @@ export default function HeatRefraction()
               {
                 float value = 0.0;
                 float amplitude = 0.5;
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 4; i++)
                 {
                     value += noise(p) * amplitude;
                     p *= 2.0;
@@ -103,27 +105,21 @@ export default function HeatRefraction()
               void main()
               {
                   vec2 uv = gl_FragCoord.xy / uResolution;
-                  vec2 centered = uv - vec2(0.5, 0.65);
-                  float width = 1.0 - abs(centered.x) * 1.7;
+                  float center = 1.0 - abs(uv.x - 0.5) * 1.55;
+                  float column = smoothstep(0.0, 0.82, center);
+                  float lower = smoothstep(0.16, 0.30, uv.y);
+                  float upper = 1.0 - smoothstep(0.68, 0.92, uv.y);
 
-                  float flameColumn = smoothstep(0.0, 0.85, width);
-                  float vertical = smoothstep(0.05, 0.25, uv.y) * (1.0 - smoothstep(0.55, 0.95, uv.y));
+                  float mask = column * lower * upper;
+                  float time = uTime * 0.16;
 
-                  float mask = flameColumn * vertical;
-                  float time = uTime * 0.22;
+                  vec2 flow = vec2(fbm(uv * 2.6 - vec2(0.0, time)), fbm(uv * 2.0 + vec2(time * 0.32, -time))) - 0.5;
 
-                  vec2 flow = vec2(fbm(uv * 2.2 - vec2(0, time)), fbm(uv * 1.8 - vec2(time * 0.3, time))) - 0.5;
-
-                  float heat = fbm(uv * 8.0 + flow * 2.0 - vec2(0, time * 3.));
+                  float heat = fbm(uv * 7.0 + flow * 2.2 - vec2(0.0, time * 2.8));
                   float shimmer = (heat - 0.5) * mask * uHeat;
+                  float alpha = (abs(shimmer) * 0.17);
 
-                  /* Distortion Composition. */
-                  vec2 distortion = vec2(shimmer * 0.018, shimmer * 0.065);
-
-                  float red = abs(distortion.x) * mask;
-                  float alpha = (abs(distortion.y) * 0.45);
-
-                  vec3 color = vec3(1.0, 0.72 + red, 0.45);
+                  vec3 color = vec3(1.0, 0.58, 0.28);
                   gl_FragColor = vec4(color, alpha);
               }
             `,
@@ -134,31 +130,86 @@ export default function HeatRefraction()
         scene.add(quad);
 
         //Animation.
-        let raf;
-        const animate = () =>
+        let raf = null;
+        let lastHeatUpdate = 0;
+        const animate = (time) =>
         {
+            if ((document.hidden) || (reducedMotion.matches))
+            {
+                raf = null;
+                return;
+            }
             uniforms.uTime.value += 0.016;
-            uniforms.uHeat.value = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--fire-energy")) || 1;
+
+            /*
+             * Read the dynamic variables from the
+             * actual fireplace room, not :root.
+             *
+             * Updating this at ~10Hz is sufficient and
+             * avoids forcing a computed-style read every
+             * render frame.
+             */
+
+            if (time - lastHeatUpdate > 100)
+            {
+                const computed = getComputedStyle(room || container);
+                const energy = parseFloat(computed.getPropertyValue("--fire-energy"));
+
+                if (Number.isFinite(energy))
+                {
+                    uniforms.uHeat.value = energy;
+                }
+
+                lastHeatUpdate = time;
+            }
+
             renderer.render(scene, camera);
             raf = requestAnimationFrame(animate);
         };
-        animate();
+
+        const resume = () =>
+        {
+            if ((!document.hidden) && (!reducedMotion.matches) && (raf === null))
+            {
+                raf = requestAnimationFrame(animate);
+            }
+        };
 
         //Resize.
         const onResize = () =>
         {
             const width = container.clientWidth;
             const height = container.clientHeight;
+
+            if ((!width) || (!height))
+            {
+                return;
+            }
             renderer.setSize(width, height);
             uniforms.uResolution.value.set(width, height);
         };
-        window.addEventListener("resize", onResize);
+
+        const resizeObserver = new ResizeObserver(onResize);
+        resizeObserver.observe(container);
+        document.addEventListener("visibilitychange", resume);
+        reducedMotion.addEventListener("change", resume);
+
+        if (!reducedMotion.matches)
+        {
+            raf = requestAnimationFrame(animate);
+        }
 
         //Cleanup.
         return () =>
         {
-            cancelAnimationFrame(raf);
-            window.removeEventListener("resize", onResize);
+            if (raf !== null)
+            {
+                cancelAnimationFrame(raf);
+            }
+
+            resizeObserver.disconnect();
+            document.removeEventListener("visibilitychange", resume);
+            reducedMotion.removeEventListener("change", resume);
             quad.geometry.dispose();
             material.dispose();
             renderer.dispose();

@@ -13,12 +13,12 @@
     align-items: flex-end;
     justify-content: center;
 
-    width: min(90%, 1360px);
-    height: 78%;
-    gap: clamp(2px, 0.65vw, 10px);
+    width: min(94%, 1460px);
+    height: 84%;
+    gap: clamp(3px, 0.52vw, 10px);
 
     transform: translateX(-50%);
-    filter: blur((var(--row-blur)));
+    filter: blur(var(--row-blur));
     pointer-events: none;
     isolation: isolate;
     overflow: visible;
@@ -31,26 +31,26 @@
 {
     position: relative;
     flex: 0 0 auto;
-    width: clamp(11px, calc(17px * var(--width)), 24px);
-    height: clamp(70px, calc(108px * var(--height)), 180px);
+    width: clamp(14px, calc(20px * var(--width)), 30px);
+    height: clamp(84px, calc(142px * var(--height)), 250px);
     transform-origin: 50% 100%;
 
-    border-radius: 52% 48% 42% 38% / 88% 84% 24% 18%;
+    border-radius: 54% 46% 44% 38% / 88% 84% 25% 18%;
     background: radial-gradient(
-        ellipse 62% 76% at 50% 91%,
+        ellipse 62% 78% at 50% 91%,
         var(--flare-white) 0%,
         var(--flame-core) 8%,
         var(--flame-hot) 20%,
-        var(--flame-gold) 39%,
-        var(--flame-orange) 64%,
-        var(--ember-red) 84%,
+        var(--flame-gold) 38%,
+        var(--flame-orange) 61%,
+        var(--ember-red) 83%,
         transparent 100%
     );
 
-    filter: brightness(calc(0.90 + var(--temperature) * 0.25))
+    filter: brightness(calc(0.88 + var(--temperature) * 0.27))
             contrast(calc(1.02 + var(--temperature) * 0.08))
-            saturate(calc(1.02 + var(--temperature) * 0.18));
-    opacity: calc(0.42 * var(--temperature) * var(--row-intensity));
+            saturate(calc(1.02 + var(--temperature) * 0.20));
+    opacity: calc(0.48 * var(--temperature) * var(--row-intensity));
 
     mix-blend-mode: screen;
     backface-visibility: hidden;
@@ -67,20 +67,20 @@
 {
   content: "";
   position: absolute;
-  inset: 4% 5% 7%;
-  transform: translateX(-2%) scale(calc(0.76 + var(--core) * 0.14));
+  inset: 4% 6% 7%;
+  transform: translateX(-2%) scale(calc(0.76 + var(--core) * 0.15));
 
   border-radius: inherit;
   background: radial-gradient(
-    ellipse 54% 64% at 50% 90%,
-    rgba(255, 220, 242, 0.98) 0%,
-    rgba(255, 236, 181, 0.90) 16%,
-    rgba(255, 191, 91, 0.40) 38%,
-    transparent 72%
+    ellipse 54% 66% at 50% 90%,
+    rgba(255, 246, 218, 0.99) 0%,
+    rgba(255, 232, 177, 0.94) 15%,
+    rgba(255, 195, 96, 0.42) 38%,
+    transparent 73%
   );
 
-  filter: blur(calc(3px + var(--row-blur) * 0.35));
-  opacity: calc(0.42 + var(--temperature) * 0.32);
+  filter: blur(calc(2.5px + var(--row-blur) * 0.32));
+  opacity: calc(0.44 + var(--temperature) * 0.34);
   mix-blend-mode: screen;
   pointer-events: none;
 
@@ -95,12 +95,12 @@
 {
   content: "";
   position: absolute;
-  inset: -38% -90% -20%;
+  inset: -40% -95% -20%;
   border-radius: 50%;
 
-  background: radial-gradient(ellipse at center, rgba(255, 213, 139, 0.13) 0%, rgba(255, 133, 42, 0.18) 28%, transparent 70%);
-  filter: blur(calc(18px + var(--row-blur) * 0.65));
-  opacity: calc(0.12 + var(--temperature) * 0.16);
+  background: radial-gradient(ellipse at center, rgba(255, 224, 156, 0.14) 0%, rgba(255, 136, 423 0.18) 28%, transparent 70%);
+  filter: blur(calc(17px + var(--row-blur) * 0.65));
+  opacity: calc(0.10 + var(--temperature) * 0.17);
   mix-blend-mode: screen;
   pointer-events: none;
 }
@@ -116,37 +116,37 @@
           scaleX(calc(0.88 + var(--scale) * 0.06))
           scaleY(calc(0.94 + var(--scale) * 0.06));
     }
-    22%
+    20%
     {
         transform:
-          translate3d(calc(var(--sway) * var(--turbulence) * 0.30), calc(var(--lift) * -0.30), 0)
-          rotate(calc(var(--lean) * 0.55))
-          scaleX(calc(0.82 + var(--scale) * 0.07))
-          scaleY(calc(1.01 + var(--scale) * 0.08));
+          translate3d(calc(var(--sway) * var(--turbulence) * 0.28), calc(var(--lift) * -0.26), 0)
+          rotate(calc(var(--lean) * 0.48))
+          scaleX(calc(0.84 + var(--scale) * 0.07))
+          scaleY(calc(1.02 + var(--scale) * 0.08));
     }
-    48%
+    46%
     {
       transform:
-        translate3d(calc(var(--sway) * var(--turbulence)), calc(var(--lift) * -0.78), 0)
+        translate3d(calc(var(--sway) * var(--turbulence)), calc(var(--lift) * -0.82), 0)
         rotate(var(--lean))
-        scaleX(calc(0.70 + var(--scale) * 0.08))
-        scaleY(calc(1.05 + var(--turbulence) * 0.08));
+        scaleX(calc(0.68 + var(--scale) * 0.08))
+        scaleY(calc(1.07 + var(--turbulence) * 0.08));
     }
-    72%
+    68%
     {
       transform:
-        translate3d(calc(var(--sway) * -0.72), calc(var(--lift) * -0.48), 0)
-        rotate(calc(var(--lean) * -0.80))
-        scaleX(calc(0.78 + var(--scale) * 0.06))
-        scaleY(calc(0.98 - var(--turbulence) * 0.025));
+        translate3d(calc(var(--sway) * -0.72), calc(var(--lift) * -0.46), 0)
+        rotate(calc(var(--lean) * -0.82))
+        scaleX(calc(0.80 + var(--scale) * 0.06))
+        scaleY(calc(0.99 - var(--turbulence) * 0.025));
     }
 }
 
 @keyframes flame-core
 {
   0%, 100% { transform: translate3d(-2%, 0, 0) scale(calc(0.78 + var(--core) * 0.10)); opacity: calc(0.44 + var(--temperature) * 0.24); }
-  45% { transform: translate3d(calc(var(--sway) * 0.12), -7%, 0) scale(calc(0.90 + var(--core) * 0.12)); opacity: calc(0.52 + var(--temperature) * 0.28); }
-  75% { transform: translate3d(calc(var(--sway) * -0.08), -3%, 0) scale(calc(0.82 + var(--core) * 0.10));  }
+  43% { transform: translate3d(calc(var(--sway) * 0.12), -7%, 0) scale(calc(0.91 + var(--core) * 0.12)); opacity: calc(0.52 + var(--temperature) * 0.28); }
+  74% { transform: translate3d(calc(var(--sway) * -0.08), -3%, 0) scale(calc(0.82 + var(--core) * 0.10));  }
 }
 
 @media (prefers-reduced-motion: reduce)

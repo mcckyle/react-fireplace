@@ -18,52 +18,51 @@
     justify-content: center;
 
     color-scheme: dark;
-
-    background: radial-gradient(
-        ellipse 70% 52% at 50% 100%,
-        rgba(92, 30, 5, 0.30) 0%,
-        rgba(39, 10, 2, 0.18) 38%,
-        transparent 74%
-    ),
-    linear-gradient(180deg, #080504 0%, #050302 48%, #020100 100%);
-
     isolation: isolate;
     contain: layout paint;
+
+    background: radial-gradient(
+        ellipse 58% 48% at 50% 91%,
+        rgba(94, 27, 5, 0.28) 0%,
+        rgba(43, 10, 2, 0.16) 38%,
+        transparent 74%
+    ),
+    linear-gradient(180deg, #080604 0%, #050302 48%, #020100 100%);
 }
 .room-ambient-light
 {
     position: absolute;
-    inset: -20%;
+    inset: -18%;
     z-index: 0;
     pointer-events: none;
     background: radial-gradient(
-        ellipse 54% 42% at 50% 91%,
-        rgba(255, 148, 55, 0.22) 0%,
-        rgba(255, 91, 18, 0.09) 38%,
+        ellipse 54% 42% at 50% 88%,
+        rgba(255, 150, 58, 0.24) 0%,
+        rgba(255, 86, 18, 0.10) 36%,
         transparent 72%
     );
     opacity: var(--fire-glow);
     filter: blur(var(--blur-bloom)) saturate(var(--fire-saturation));
     mix-blend-mode: screen;
-    transform: translate3d(0, calc((var(--flicker) - 1) * -7px), 0) scale(calc(0.99 + var(--fire-energy) * 0.025));
+    transform: translate3d(0, calc((var(--flicker) - 1) * -8px), 0) scale(calc(0.985 + var(--fire-energy) * 0.025));
     will-change: transform, opacity;
 }
 .room-firelight-projection
 {
     position: absolute;
-    inset: -12%;
+    inset: -10%;
     z-index: 1;
     pointer-events: none;
     background: radial-gradient(
-        ellipse 44% 36% at 50% 91%,
-        rgba(255, 193, 112, 0.14) 0%,
-        rgba(255, 106, 24, 0.075) 38%,
+        ellipse 42% 36% at 50% 88%,
+        rgba(255, 204, 128, 0.16) 0%,
+        rgba(255, 106, 24, 0.075) 36%,
         transparent 72%
     );
-    opacity: calc(0.08 + var(--fire-energy) * 0.14);
-    filter: blur(72px) saturate(1.16);
+    opacity: calc(0.08 + var(--fire-energy) * 0.15);
+    filter: blur(76px) saturate(1.18);
     mix-blend-mode: screen;
-    transform: translate3d(0, calc((var(--flicker) - 1) * -11px), 0);
+    transform: translate3d(0, calc((var(--flicker) - 1) * -12px), 0);
     will-change: transform, opacity;
 }
 .room-vignette
@@ -73,13 +72,13 @@
     z-index: 8;
     pointer-events: none;
     background: radial-gradient(
-        ellipse 72% 72% at 50% 67%,
-        transparent 34%,
-        rgba(0, 0, 0, 0.16) 62%,
-        rgba(0, 0, 0, 0.50) 84%,
-        rgba(0, 0, 0, 0.82) 100%
+        ellipse 72% 70% at 50% 67%,
+        transparent 31%,
+        rgba(0, 0, 0, 0.12) 57%,
+        rgba(0, 0, 0, 0.46) 82%,
+        rgba(0, 0, 0, 0.84) 100%
     );
-    opacity: calc(0.84 - var(--fire-energy) * 0.14);
+    opacity: calc(0.84 - var(--fire-energy) * 0.13);
 }
 
 /* ====================================
@@ -97,17 +96,48 @@
     align-items: center;
     pointer-events: none;
 }
-
+.fireplace-shell::before
+{
+    content: "";
+    position: absolute;
+    bottom: clamp(56px, 7.5vh, 86px);
+    width: min(96vw, 1620px);
+    height: clamp(10px, 1.2vh, 16px);
+    border-radius: 999px;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 202, 145, 0.025),
+        rgba(0, 0, 0, 0.55)
+    );
+    box-shadow: 0 -1px 0 rgba(255, 220, 175, 0.025),
+                0 14px 34px rgba(0, 0, 0, 0.72);
+    opacity: 0.80;
+}
+.fireplace-shell::after
+{
+    content: "";
+    position: absolute;
+    bottom: clamp(56px, 7.5vh, 86px);
+    width: min(96vw, 1620px);
+    height: clamp(340px, 54vh, 580px);
+    pointer-events: none;
+    border-inline: 1px solid rgba(255, 190, 125, 0.018);
+    box-shadow: inset 28px 0 42px rgba(0, 0, 0, 0.12),
+                inset -28px 0 42px rgba(0, 0, 0, 0.12);
+    opacity: 0.90;
+}
 .mantle
 {
     position: relative;
-    width: 100%;
-    height: clamp(30px, 3.6vh, 44px);
-    background: linear-gradient(180deg, #171411 0%, #0d0b09 38%, #070605 100%);
+    width: min(96vw, 1620px);
+    height: clamp(36px, 4.2vh, 52px);
+    z-index: 4;
+    background: linear-gradient(180deg, #1b1713 0%, #100d0a 34%, #080604 100%);
     isolation: isolate;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035),
-                inset 0 -1px 0 rgba(0, 0, 0, 0.95),
-                0 12px 30px rgba(0, 0, 0, 0.72);
+    box-shadow: inset 0 1px 0 rgba(255, 230, 195, 0.055),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.96),
+                0 8px 18px rgba(0, 0, 0, 0.68),
+                0 24px 54px rgba(0, 0, 0, 0.54);
 }
 .mantle::before
 {
@@ -116,17 +146,17 @@
     inset-inline: 0;
     top: 0;
     height: 1px;
-    background: linear-gradient(90deg, rgba(255, 210, 155, 0.06) 35%, rgba(255, 220, 175, 0.10) 50%, rgba(255, 210, 155, 0.06) 65%, transparent 92%);
-    opacity: calc(0.50 + var(--fire-energy) * 0.25);
+    background: linear-gradient(90deg, rgba(255, 215, 165, 0.045) 22%, rgba(255, 228, 190, 0.10) 50%, rgba(255, 215, 165, 0.045) 78%, transparent 100%);
+    opacity: calc(0.65 + var(--fire-energy) * 0.22);
 }
 .mantle::after
 {
     content: "";
     position: absolute;
-    inset-inline: 0;
+    inset-inline: 5%;
     bottom: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 150, 80, 0.055) 42%, rgba(255, 180, 105, 0.08) 50%, rgba(255, 150, 80, 0.055) 58%, transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 150, 80, 0.045) 40%, rgba(255, 190, 115, 0.075) 50%, rgba(255, 150, 80, 0.045) 60%, transparent);
 }
 
 /* ====================================
@@ -135,23 +165,23 @@
 .firebox
 {
     position: relative;
-    width: min(96vw, 1500px);
-    height: clamp(340px, 52vh, 560px);
+    width: min(94vw, 1560px);
+    height: clamp(430px, 56vh, 610px);
     overflow: hidden;
     isolation: isolate;
     contain: layout paint;
     background: radial-gradient(
-        ellipse 76% 52% at 50% 106%,
-        #3b1204 0%,
-        #190702 30%,
-        #070302 65%,
-        #010100 100%
+        ellipse 72% 52% at 50% 105%,
+        #471505 0%,
+        #250902 25%,
+        #0c0402 57%,
+        #020100 100%
     );
-    box-shadow: inset 0 120px 180px rgba(0, 0, 0, 0.86),
-                inset 0 -90px 120px rgba(255, 68, 8, 0.12),
-                inset 1px 0 rgba(255, 255, 255, 0.012),
-                inset -1px 0 rgba(255, 255, 255, 0.012),
-                0 34px 70px rgba(0, 0, 0, 0.58);
+    box-shadow: inset 0 100px 170px rgba(0, 0, 0, 0.86),
+                inset 0 -100px 150px rgba(255, 68, 8, 0.10),
+                inset 1px 0 rgba(255, 255, 255, 0.018),
+                inset -1px 0 rgba(255, 255, 255, 0.018),
+                0 30px 72px rgba(0, 0, 0, 0.4);
 }
 .firebox::before
 {
@@ -161,12 +191,12 @@
     z-index: 0;
     pointer-events: none;
     background: radial-gradient(
-        ellipse 58% 42% at 50% 104%,
-        rgba(255, 175, 82, 0.12) 0%,
+        ellipse 62% 45% at 50% 104%,
+        rgba(255, 180, 84, 0.15) 0%,
         transparent 70%
     ),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.012), transparent 26%);
-    opacity: calc(0.30 + var(--fire-luminance) * 0.24);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent 28%);
+    opacity: calc(0.32 + var(--fire-luminance) * 0.22);
     mix-blend-mode: screen;
 }
 .firebox::after
@@ -178,19 +208,19 @@
     pointer-events: none;
     background: linear-gradient(
         90deg,
-        rgba(0, 0, 0, 0.16),
+        rgba(0, 0, 0, 0.20),
         transparent 12%,
         transparent 88%,
-        rgba(0, 0, 0, 0.16)
+        rgba(0, 0, 0, 0.20)
     ),
     linear-gradient(
         180deg,
-        rgba(0, 0, 0, 0.22),
-        transparent 18%,
+        rgba(0, 0, 0, 0.24),
+        transparent 20%,
         transparent 76%,
-        rgba(0, 0, 0, 0.20)
+        rgba(0, 0, 0, 0.22)
     );
-    box-shadow: inset 0 0 90px rgba(0, 0, 0, 0.52);
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.56);
 }
 .firebox-reflection
 {
@@ -198,10 +228,22 @@
     inset: 0;
     z-index: 1;
     pointer-events: none;
-    background: linear-gradient(180deg, transparent 20%, rgba(255, 130, 55, 0.018) 54%, rgba(255, 190, 120, 0.055) 100%);
-    opacity: calc(0.16 + var(--fire-energy) * 0.16);
+    background: linear-gradient(180deg, transparent 12%, rgba(255, 115, 42, 0.012) 48%, rgba(255, 188, 115, 0.060) 100%);
+    opacity: calc(0.16 + var(--fire-energy) * 0.18);
     mix-blend-mode: screen;
 }
+.heat-webgl
+{
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: calc(0.34 + var(--fire-energy) * 0.22);
+    mix-blend-mode: screen;
+}
+.heat-webgl canvas { width: 100%; height: 100%; display: block; }
 
 /* ====================================
    FIREPLACE GLOW STYLES.
@@ -210,21 +252,21 @@
 {
     position: absolute;
     left: 50%;
-    bottom: -4%;
+    bottom: -5%;
     z-index: 0;
-    width: min(92%, 1420px);
-    height: 72%;
-    transform: translateX(-50%) scale(calc(0.98 + var(--fire-energy) * 0.018));
+    width: min(90%, 1420px);
+    height: 78%;
+    transform: translateX(-50%) scale(calc(0.97 + var(--fire-energy) * 0.025));
     background: radial-gradient(
         ellipse at 50% 88%,
-        rgba(255, 215, 125, 0.27) 0%,
-        rgba(255, 113, 25, 0.14) 32%,
+        rgba(255, 221, 135, 0.29) 0%,
+        rgba(255, 113, 25, 0.15) 30%,
         rgba(255, 45, 0, 0.045) 56%,
         transparent 76%
     );
 
     filter: blur(calc(58px + var(--heat) * 18px)) saturate(var(--fire-saturation));
-    opacity: calc(0.34 + var(--fire-energy) * 0.22);
+    opacity: calc(0.34 + var(--fire-energy) * 0.23);
     mix-blend-mode: screen;
     will-change: transform, opacity;
 }
@@ -233,20 +275,20 @@
 {
     position: absolute;
     left: 50%;
-    bottom: 2%;
-    z-index: 1;
-    width: min(74%, 1100px);
-    height: 74px;
+    bottom: 3%;
+    z-index: 2;
+    width: min(76%, 1180px);
+    height: 92px;
     pointer-events: none;
     transform: translateX(-50%) scale(calc(0.98 + var(--fire-energy) * 0.025));
     background: radial-gradient(
         ellipse at center,
-        rgba(255, 112, 22, 0.34) 0%,
-        rgba(255, 68, 8, 0.13) 38%,
-        transparent 74%
+        rgba(255, 129, 30, 0.40) 0%,
+        rgba(255, 74, 8, 0.16) 38%,
+        transparent 75%
     );
-    opacity: calc(0.38 + var(--intensity) * 0.20);
-    filter: blur(17px) saturate(1.35);
+    opacity: calc(0.38 + var(--intensity) * 0.22);
+    filter: blur(18px) saturate(1.4);
     mix-blend-mode: screen;
     will-change: transform, opacity;
 }
@@ -258,21 +300,21 @@
 {
     position: absolute;
     left: 50%;
-    bottom: 4%;
-    z-index: 2;
+    bottom: 4.5%;
+    z-index: 4;
 
-    width: min(82%, 1240px);
-    height: clamp(56px, 7vh, 82px);
+    width: min(78%, 1180px);
+    height: clamp(62px, 7.2vh, 86px);
     border-radius: 999px;
     pointer-events: none;
 
     transform: translateX(-50%) scale(calc(0.995 + var(--fire-energy) * 0.006));
-    filter: brightness(calc(0.82 + var(--fire-energy) * 0.16)) contrast(1.08);
-    background: linear-gradient(180deg, #211711 0%, #110a06 34%, #040201 100%);
-    box-shadow: inset 0 8px 15px rgba(255, 255, 255, 0.025),
-                inset 0 -14px 24px rgba(0, 0, 0, 0.92),
-                inset 0 0 32px rgba(255, 78, 14, 0.18),
-                0 20px 38px rgba(0, 0, 0, 0.78);
+    filter: brightness(calc(0.82 + var(--fire-energy) * 0.16)) contrast(1.10);
+    background: linear-gradient(180deg, #271a12 0%, #140b06 34%, #050201 100%);
+    box-shadow: inset 0 7px 16px rgba(255, 255, 255, 0.028),
+                inset 0 -15px 26px rgba(0, 0, 0, 0.94),
+                inset 0 0 34px rgba(255, 78, 14, 0.19),
+                0 20px 42px rgba(0, 0, 0, 0.82);
 }
 .logs::before
 {
@@ -281,33 +323,33 @@
     inset: 0;
     border-radius: inherit;
 
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 32%);
-    opacity: 0.45;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.042), transparent 30%),
+    radial-gradient(ellipse at 18% 70%, rgba(255, 104, 25, 0.11), transparent 72%),
+    radial-gradient(ellipse at 18% 70%, rgba(255, 124, 35, 0.10), transparent 72%);
+    opacity: calc(0.48 + var(--fire-energy) * 0.18);
 }
 .logs::after
 {
     content: "";
     position: absolute;
-    inset: 5px;
+    inset: 7px;
     border-radius: inherit;
 
     background:
-        radial-gradient(circle at 28% 52%, rgba(255, 78, 18, 0.18), transparent 48%),
-        radial-gradient(circle at 70% 55%, rgba(255, 136, 42, 0.15), transparent 52%);
+        radial-gradient(ellipse at 31% 55%, rgba(255, 76, 15, 0.18), transparent 44%),
+        radial-gradient(ellipse at 68% 54%, rgba(255, 136, 42, 0.16), transparent 48%);
     mix-blend-mode: screen;
     opacity: calc(0.18 + var(--fire-energy) * 0.30);
     filter: blur(6px) saturate(1.4);
 }
-/*.flame-stage
+.flame-stage
 {
-    position: relative;
+    position: absolute;
     inset: 0;
-    z-index:2;
+    z-index:5;
     pointer-events: none;
-    transform: translate3d(0, 1.5%, 0) scaleX(1.07) scaleY(1.16);
-    transform-origin: 50% 100%;
-    will-change: transform;
-}*/
+    overflow: visible;
+}
 
 /* ====================================
    FIREPLACE HEARTH STYLES.
@@ -315,12 +357,13 @@
 .hearth
 {
     position: relative;
-    width: 100%;
-    height: clamp(62px, 8vh, 90px);
-    background: linear-gradient(180deg, #11100f 0%, #080807 42%, #030303 100%);
+    width: min(100%, 1680px);
+    height: clamp(68px, 8vh, 94px);
+    background: linear-gradient(180deg, #151311 0%, #0a0908 44%, #030303 100%);
 
     box-shadow: inset 0 12px 26px rgba(0, 0, 0, 0.94),
-                inset 0 1px 0 rgba(255, 255, 255, 0.018);
+                inset 0 1px 0 rgba(255, 255, 255, 0.020),
+                0 -8px 24px rgba(0, 0, 0, 0.28);
 }
 .hearth::before
 {
@@ -330,7 +373,7 @@
     pointer-events: none;
     background: radial-gradient(
         ellipse 52% 100% at 50% 0%,
-        rgba(255, 132, 45, 0.075),
+        rgba(255, 132, 45, 0.080),
         transparent 72%
     );
     opacity: calc(0.42 + var(--fire-energy) * 0.28);
@@ -347,7 +390,7 @@
         90deg,
         transparent,
         rgba(255, 170, 90, 0.055) 38%,
-        rgba(255, 190, 120, 0.09) 50%,
+        rgba(255, 190, 120, 0.095) 50%,
         rgba(255, 170, 90, 0.055) 62%,
         transparent
     );
@@ -364,30 +407,31 @@
     right: calc(16px + env(safe-area-inset-right));
     z-index: 20;
 
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
 
     display: grid;
     place-items: center;
     padding: 0;
 
-    border: 1px solid rgba(255, 196, 135, 0.09);
+    border: 1px solid rgba(255, 196, 135, 0.10);
     border-radius: 50%;
 
-    background: rgba(5, 3, 2, 0.30);
-    color: rgba(255, 218, 172, 0.78);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.035);
+    background: rgba(5, 3, 2, 0.34);
+    color: rgba(255, 218, 172, 0.76);
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.035);
     backdrop-filter: blur(16px) saturate(1.25);
     -webkit-backdrop-filter: blur(16px) saturate(1.25);
 
     cursor: pointer;
-    opacity: 0.48;
+    opacity: 0.46;
 
-    transition: opacity var(--transition-medium) ease, transform var(--transition-medium) ease, background var(--transition-medium) ease, border-color var(--transition-medium) ease, box-shadow var(--transition-medium) ease;
+    transition: opacity var(--transition-medium) ease, transform var(--transition-fast) ease, background var(--transition-medium) ease, border-color var(--transition-medium) ease, box-shadow var(--transition-medium) ease;
 }
-.sound-toggle:hover { opacity: 0.92; background: rgba(18, 9, 4, 0.58); border-color: rgba(255, 196, 135, 0.16); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.34), 0 0 24px rgba(255, 120, 35, 0.09); }
+.sound-toggle:hover { opacity: 0.94; background: rgba(18, 9, 4, 0.62); border-color: rgba(255, 196, 135, 0.17); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.36), 0 0 25px rgba(255, 120, 35, 0.10); }
 .sound-toggle:active { transform: scale(0.94); }
-.sound-toggle[aria-pressed="true"] { opacity: 0.84; color: var(--flame-hot); border-color: rgba(255, 180, 100, 0.18); box-shadow: 0 8px 26px rgba(0, 0, 0, 0.30), 0 0 28px rgba(255, 108, 25, 0.14); }
+.sound-toggle[aria-pressed="true"] { opacity: 0.86; color: var(--flame-hot); border-color: rgba(255, 180, 100, 0.19); box-shadow: 0 8px 26px rgba(0, 0, 0, 0.30), 0 0 28px rgba(255, 108, 25, 0.14); }
+.sound-icon { width: 21px; height: 21px; }
 
 @media (prefers-reduced-motion: reduce)
 {
@@ -395,16 +439,19 @@
     .sound-toggle { transition: none; }
 }
 
-@media (max-width: 700px)
+@media (max-width: 900px)
 {
-    .firebox { width: 100%; height: clamp(320px, 50vh, 460px); }
-    .mantle { height: 32px; }
-    .logs { width: 88%; }
-    .coal-bed { width: 84%; }
-    /*.flame-stage { transform: translate3d(0, 1%, 0) scaleX(1.05) scaleY(1.12); }*/
+    .firebox { width: 100%; height: clamp(400px, 57vh, 570px); }
+    .mantle { width: 100%; height: 38px; }
+    .fireplace-shell::before, .fireplace-shell::after { width: 100%; }
+    .logs { width: 84%; }
+    .coal-bed { width: 88%; }
 }
 @media (max-width: 600px)
 {
     .firebox { height: 58vh; }
-    .hearth { height: 58px; }
+    .hearth { height: 60px; }
+    .logs { width: 88%; }
+    .coal-bed { width: 92%; }
+    .sound-toggle { top: calc(12px + env(safe-area-inset-top)); right: calc(12px + env(safe-area-inset-right)); }
 }

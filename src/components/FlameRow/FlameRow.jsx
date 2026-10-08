@@ -1,6 +1,6 @@
 //Filename: FlameRow.jsx
 //Author: Kyle McColgan
-//Date: 11 August 2026
+//Date: 8 October 2026
 //Description: This file contains the FlameRow component for the Fireplace React project.
 
 import { useMemo } from "react";
@@ -21,24 +21,25 @@ export default function FlameRow({
             const position = index / Math.max(count - 1, 1);
             const center = 1 - Math.abs(position - 0.5) * 2; //0 edges -> 1 center.
             const variation = Math.random();
-            const energy = 0.68 + variation * 0.24 + center * 0.32;
-            const temperature = 0.76 + variation * 0.18 + center * 0.26;
-            const turbulence = 0.78 + Math.random() * 0.62;
+            const energy = 0.66 + variation * 0.24 + center * 0.34;
+            const temperature = 0.74 + variation * 0.18 + center * 0.28;
+            const turbulence = 0.72 + Math.random() * 0.68;
+            const heightBias = center > 0.72 ? 1.08 : 0.94 + center * 0.08;
 
             return {
                 energy: energy.toFixed(3),
-                scale: (0.82 + energy * 0.30).toFixed(3),
+                scale: (0.84 + energy * 0.32).toFixed(3),
                 temperature: temperature.toFixed(3),
-                width: (0.76 + energy * 0.24).toFixed(3),
-                height: (0.70 + energy * 0.62).toFixed(3),
-                sway: ((Math.random() * 16) - 8).toFixed(2),
-                lift: (7 + energy * 19).toFixed(2),
-                lean: ((Math.random() * 9) - 4.5).toFixed(2),
+                width: (0.82 + energy * 0.28).toFixed(3),
+                height: ((0.78 + energy * 0.68) * heightBias).toFixed(3),
+                sway: ((Math.random() * 18) - 9).toFixed(2),
+                lift: (9 + energy * 23).toFixed(2),
+                lean: ((Math.random() * 10) - 5).toFixed(2),
                 turbulence: turbulence.toFixed(2),
-                duration: (1.05 + Math.random() * 0.72 + (1 - Math.min(energy, 1)) * 0.30).toFixed(2),
-                delay: (-Math.random() * 3.6 + phase).toFixed(2),
-                taper: (0.78 + Math.random() * 0.20 + center * 0.08).toFixed(3),
-                core: (0.82 + Math.random() * 0.20 + center * 0.10).toFixed(3),
+                duration: (1.10 + Math.random() * 0.82 + (1 - Math.min(energy, 1)) * 0.35).toFixed(2),
+                delay: (-Math.random() * 4.2 + phase).toFixed(2),
+                taper: (0.76 + Math.random() * 0.20 + center * 0.10).toFixed(3),
+                core: (0.82 + Math.random() * 0.20 + center * 0.12).toFixed(3),
             };
         });
     }, [count, phase]);

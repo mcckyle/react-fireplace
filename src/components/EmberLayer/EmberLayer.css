@@ -7,14 +7,14 @@
 {
     position: absolute;
     left: 50%;
-    bottom: 3%;
+    bottom: 4%;
 
-    width: min(86%, 1240px);
-    height: min(390px, 72%);
+    width: min(88%, 1300px);
+    height: min(450px, 78%);
     transform: translateX(-50%);
 
     pointer-events: none;
-    z-index: 2;
+    z-index: 6;
     overflow: visible;
     isolation: isolate;
 }
@@ -64,19 +64,19 @@
 {
     content: "";
     position: absolute;
-    inset: calc(var(--size) * -2.6);
+    inset: calc(var(--size) * -2.8);
 
     border-radius: 50%;
     background: radial-gradient(
         circle,
-        rgba(255, 230, 175, 0.14) 0%,
+        rgba(255, 235, 185, 0.16) 0%,
         rgba(255, 153, 55, 0.18) 28%,
         rgba(255, 94, 20, 0.08) 52%,
         transparent 72%
     );
 
     filter: blur(4px);
-    opacity: calc(var(--glow) * var(--temperature) * 0.72);
+    opacity: calc(var(--glow) * var(--temperature) * 0.74);
     pointer-events: none;
 }
 
@@ -90,32 +90,32 @@
            translate3d(0, 0, 0)
            scale(var(--mass));
     }
-    9% { opacity: calc(var(--temperature) * var(--cooling) * 0.92); }
-    28%
+    8% { opacity: calc(var(--temperature) * var(--cooling) * 0.92); }
+    27%
     {
         transform:
             translate3d(calc(var(--drift) * 0.18 * var(--turbulence)), calc(var(--rise) * -0.22), 0)
-            scale(calc(var(--mass) * 1.04));
+            scale(calc(var(--mass) * 1.05));
     }
-    52%
+    50%
     {
         transform:
-            translate3d(calc(var(--drift) * 0.48 * var(--turbulence)), calc(var(--rise) * -0.55), 0)
-            scale(calc(var(--mass) * 0.88));
+            translate3d(calc(var(--drift) * 0.46 * var(--turbulence)), calc(var(--rise) * -0.54), 0)
+            scale(calc(var(--mass) * 0.90));
     }
-    78%
+    76%
     {
-        opacity: 0.26;
+        opacity: 0.24;
         transform:
-            translate3d(calc(var(--drift) * 0.82), calc(var(--rise) * -0.80), 0)
+            translate3d(calc(var(--drift) * 0.84), calc(var(--rise) * -0.80), 0)
             scale(0.58);
     }
     100%
     {
         opacity: 0;
         transform:
-            translate3d(calc(var(--drift) * var(--turbulence)), calc(var(--rise) * -0.94), 0)
-            scale(0.34);
+            translate3d(calc(var(--drift) * var(--turbulence)), calc(var(--rise) * -0.96), 0)
+            scale(0.32);
     }
 }
 

@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 19 September 2026
+//Date: 8 October 2026
 //Description: This file contains the parent component for the Fireplace React project.
 
 import { useEffect, useRef, useState } from "react";
@@ -20,13 +20,9 @@ function Fireplace()
   /*
    * Fire Simulation
    *
-   * The simulation intentionally combines:
-   * - slow energy drift
-   * - medium-scale turbulence
-   * - high-frequence flame flicker
+   * The simulation drives the shared lighting variables on the room.
+   * Individual visual layers consume those variables independently.
    *
-   * CSS consumes the resulting variables while the individual
-   * visual components remain responsible for their own geometry.
    */
   useEffect(() =>
   {
@@ -37,14 +33,14 @@ function Fireplace()
       return undefined;
     }
 
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
     let intensity = 1;
     let target = 1;
     let velocity = 0;
     let heat = 0.8;
-    let flicker = 1;
-
-    let nextShift = performance.now();
     let frameId = null;
+    let nextShift = performance.now();
 
     const chooseTarget = () =>
     {
@@ -52,9 +48,9 @@ function Fireplace()
        * Most fire movement stays close to equilibrium.
        * Occasionally stronger flares keep the fire organic.
        */
-      target = Math.random() < 0.08
-        ? 1.12 + Math.random() * 0.14
-        : 0.91 + Math.random() * 0.12;
+      target = Math.random() < 0.09
+        ? 1.10 + Math.random() * 0.16
+        : 0.92 + Math.random() * 0.10;
     };
 
     const update = (time) =>
@@ -65,19 +61,28 @@ function Fireplace()
         return;
       }
 
+      if (reducedMotion.matches)
+      {
+        room.style.setProperty("--intensity", "1");
+        room.style.setProperty("--heat", "0.80");
+        room.style.setProperty("--flicker", "1");
+        frameId = null;
+        return;
+      }
+
       if (time >= nextShift)
       {
         chooseTarget();
-        nextShift = time + 1600 + Math.random() * 3600;
+        nextShift = time + 1700 + Math.random() * 3800;
       }
 
       /*
        * Multiple frequencies prevent an obvious repeating cycle.
        */
-       const slow = Math.sin(time * 0.0024);
-       const medium = Math.sin(time * 0.0105 + 2.15);
-       const turbulence = Math.sin(time * 0.041 + 5.4) * 0.55 +
-                          Math.sin(time * 0.083 + 2.7) * 0.45;
+       const slow = Math.sin(time * 0.0022);
+       const medium = Math.sin(time * 0.0097 + 2.15);
+       const turbulence = Math.sin(time * 0.039 + 5.4) * 0.55 +
+                          Math.sin(time * 0.081 + 2.7) * 0.45;
        /*
         * Spring-like energy movement.
         *
@@ -93,7 +98,7 @@ function Fireplace()
         * Realistic fire should feel alive without making
         * the entire room pulse aggressively.
         */
-        flicker = 0.985 + slow * 0.018 + medium * 0.022 + turbulence * 0.012;
+        const flicker = 0.982 + slow * 0.020 + medium * 0.025 + turbulence * 0.014;
 
         /*
          * Heat follows intensity more slowly than luminance.
@@ -111,17 +116,54 @@ function Fireplace()
 
     const resume = () =>
     {
-      if ((!document.hidden) && (frameId === null))
+      if ((!document.hidden) && (!reducedMotion.matches) && (frameId === null))
       {
         frameId = requestAnimationFrame(update);
       }
     };
 
+    const handleMotionPreference = () =>
+    {
+      if (reducedMotion.matches)
+      {
+        if (frameId !== null)
+        {
+          cancelAnimationFrame(frameId);
+          frameId = null;
+        }
+
+        room.style.setProperty("--intensity", "1");
+        room.style.setProperty("--heat", "0.80");
+        room.style.setProperty("--flicker", "1");
+      }
+      else
+      {
+        resume();
+      }
+    };
+
     chooseTarget();
 
-    frameId = requestAnimationFrame(update);
+    if (reducedMotion.matches)
+    {
+      room.style.setProperty("--intensity", "1");
+      room.style.setProperty("--heat", "0.80");
+      room.style.setProperty("--flicker", "1");
+    }
+    else
+    {
+      frameId = requestAnimationFrame(update);
+    }
 
     document.addEventListener("visibilitychange", resume);
+    reducedMotion.addEventListener("change", handleMotionPreference);
+
+    simulationRef.current = {
+      get energy()
+      {
+        return intensity * heat;
+      }
+    };
 
     return () =>
     {
@@ -130,6 +172,8 @@ function Fireplace()
         cancelAnimationFrame(frameId);
       }
       document.removeEventListener("visibilitychange", resume);
+      reducedMotion.removeEventListener("change", handleMotionPreference);
+      simulationRef.current = null;
     };
   }, []);
 
@@ -161,8 +205,7 @@ function Fireplace()
 
     const fade = () =>
     {
-      const current = audio.volume;
-      const difference = targetVolume - current;
+      const difference = targetVolume - audio.volume;
 
       if (Math.abs(difference) < 0.004)
       {
@@ -178,7 +221,7 @@ function Fireplace()
         return;
       }
 
-      audio.volume = current + difference * 0.08;
+      audio.volume += difference * 0.08;
       audioFadeRef.current = requestAnimationFrame(fade);
     };
 
@@ -244,9 +287,9 @@ function Fireplace()
           <div className="coal-bed" aria-hidden="true" />
           <div className="logs" aria-hidden="true" />
           <div className="flame-stage" aria-hidden="true">
-            <FlameRow count={5} intensity={0.88} blur={12} zIndex={1} />
-            <FlameRow count={11} intensity={1.02} blur={5} zIndex={2} phase={-1.2} />
-            <FlameRow count={17} intensity={1.10} blur={0} zIndex={3} phase={-2.4} />
+            <FlameRow count={7} intensity={0.84} blur={16} zIndex={1} phase={0.6} />
+            <FlameRow count={13} intensity={0.98} blur={7} zIndex={2} phase={-1.2} />
+            <FlameRow count={19} intensity={1.08} blur={0} zIndex={3} phase={-2.4} />
           </div>
         </div>
         <div className="hearth" aria-hidden="true" />
