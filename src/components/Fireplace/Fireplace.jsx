@@ -1,6 +1,6 @@
 //Filename: Fireplace.jsx
 //Author: Kyle McColgan
-//Date: 8 October 2026
+//Date: 8 November 2026
 //Description: This file contains the parent component for the Fireplace React project.
 
 import { useEffect, useRef, useState } from "react";
@@ -14,7 +14,6 @@ function Fireplace()
   const roomRef = useRef(null);
   const audioRef = useRef(null);
   const audioFadeRef = useRef(null);
-  const simulationRef = useRef(null);
   const [soundOn, setSoundOn] = useState(false);
 
   /*
@@ -39,8 +38,23 @@ function Fireplace()
     let target = 1;
     let velocity = 0;
     let heat = 0.8;
+
     let frameId = null;
-    let nextShift = performance.now();
+    let previousTime = 0;
+    let nextShift = 0;
+
+    const setLighting = () =>
+    {
+      room.style.setProperty("--intensity", intensity.toFixed(3));
+      room.style.setProperty("--heat", heat.toFixed(3));
+
+      const flicker = 0.985 +
+        Math.sin(performance.now() * 0.0022) * 0.018 +
+        Math.sin(performance.now() * 0.0097 + 2.15) * 0.023 +
+        Math.sin(performance.now() * 0.0039 + 5.4) * 0.009;
+
+      room.style.setProperty("--flicker", flicker.toFixed(3));
+    };
 
     const chooseTarget = () =>
     {
@@ -49,26 +63,21 @@ function Fireplace()
        * Occasionally stronger flares keep the fire organic.
        */
       target = Math.random() < 0.09
-        ? 1.10 + Math.random() * 0.16
-        : 0.92 + Math.random() * 0.10;
+        ? 1.08 + Math.random() * 0.15
+        : 0.93 + Math.random() * 0.09;
     };
 
     const update = (time) =>
     {
-      if (document.hidden)
+      if ((document.hidden) || (reducedMotion.matches))
       {
         frameId = null;
+        previousTime = 0;
         return;
       }
 
-      if (reducedMotion.matches)
-      {
-        room.style.setProperty("--intensity", "1");
-        room.style.setProperty("--heat", "0.80");
-        room.style.setProperty("--flicker", "1");
-        frameId = null;
-        return;
-      }
+      const delta = previousTime === 0 ? 1 : Math.min((time - previousTime) / 16.667, 2.5);
+      previousTime = time;
 
       if (time >= nextShift)
       {
@@ -77,47 +86,41 @@ function Fireplace()
       }
 
       /*
-       * Multiple frequencies prevent an obvious repeating cycle.
-       */
-       const slow = Math.sin(time * 0.0022);
-       const medium = Math.sin(time * 0.0097 + 2.15);
-       const turbulence = Math.sin(time * 0.039 + 5.4) * 0.55 +
-                          Math.sin(time * 0.081 + 2.7) * 0.45;
-       /*
         * Spring-like energy movement.
         *
         * This is deliberately damped so intensity changes
         * feel like fire breathing rather than UI animation.
         */
-        velocity += (target - intensity) * 0.017;
-        velocity *= 0.935;
-        intensity += velocity;
-
-       /*
-        * Keep the high-frequence flicker restrained.
-        * Realistic fire should feel alive without making
-        * the entire room pulse aggressively.
-        */
-        const flicker = 0.982 + slow * 0.020 + medium * 0.025 + turbulence * 0.014;
+        velocity += (target - intensity) * 0.017 * delta;
+        velocity *= Math.pow(0.935, delta);
+        intensity += velocity * delta;
 
         /*
          * Heat follows intensity more slowly than luminance.
          * This creates the impression of thermal inertia.
          */
         const targetHeat = 0.68 + intensity * 0.12;
-        heat += (targetHeat - heat) * 0.012;
-
-        room.style.setProperty("--intensity", intensity.toFixed(3));
-        room.style.setProperty("--heat", heat.toFixed(3));
-        room.style.setProperty("--flicker", flicker.toFixed(3));
+        heat += (targetHeat - heat) * (1 - Math.pow(1 - 0.012, delta));
+        setLighting();
 
         frameId = requestAnimationFrame(update);
+    };
+
+    const stop = () =>
+    {
+      if (frameId !== null)
+      {
+        cancelAnimationFrame(frameId);
+        frameId = null;
+      }
+      previousTime = 0;
     };
 
     const resume = () =>
     {
       if ((!document.hidden) && (!reducedMotion.matches) && (frameId === null))
       {
+        previousTime = 0;
         frameId = requestAnimationFrame(update);
       }
     };
@@ -126,11 +129,9 @@ function Fireplace()
     {
       if (reducedMotion.matches)
       {
-        if (frameId !== null)
-        {
-          cancelAnimationFrame(frameId);
-          frameId = null;
-        }
+        stop();
+        intensity = 1;
+        heat = 0.80;
 
         room.style.setProperty("--intensity", "1");
         room.style.setProperty("--heat", "0.80");
@@ -143,6 +144,7 @@ function Fireplace()
     };
 
     chooseTarget();
+    nextShift = performance.now() + 1800;
 
     if (reducedMotion.matches)
     {
@@ -152,28 +154,17 @@ function Fireplace()
     }
     else
     {
-      frameId = requestAnimationFrame(update);
+      resume();
     }
 
     document.addEventListener("visibilitychange", resume);
     reducedMotion.addEventListener("change", handleMotionPreference);
 
-    simulationRef.current = {
-      get energy()
-      {
-        return intensity * heat;
-      }
-    };
-
     return () =>
     {
-      if (frameId !== null)
-      {
-        cancelAnimationFrame(frameId);
-      }
+      stop();
       document.removeEventListener("visibilitychange", resume);
       reducedMotion.removeEventListener("change", handleMotionPreference);
-      simulationRef.current = null;
     };
   }, []);
 
@@ -190,26 +181,40 @@ function Fireplace()
     if (audioFadeRef.current !== null)
     {
       cancelAnimationFrame(audioFadeRef.current);
+      audioFadeRef.current = null;
     }
 
     const targetVolume = soundOn ? 0.34 : 0;
 
     if ((soundOn) && (audio.paused))
     {
-      audio.volume = Math.min(audio.volume, targetVolume);
       audio.play().catch(() =>
       {
         setSoundOn(false);
       });
     }
 
-    const fade = () =>
+    if ((!soundOn) && (audio.volume === 0))
     {
+      audio.pause();
+      audio.currentTime = 0;
+      return undefined;
+    }
+
+    let previousTime = 0;
+
+    const fade = (time) =>
+    {
+      const delta = previousTime === 0 ? 1 : Math.min((time - previousTime) / 16.667, 2.5);
+      previousTime = time;
+
       const difference = targetVolume - audio.volume;
+      const factor = 1 - Math.pow(1 - 0.08, delta);
 
       if (Math.abs(difference) < 0.004)
       {
         audio.volume = targetVolume;
+        audioFadeRef.current = null;
 
         if (targetVolume === 0)
         {
@@ -217,11 +222,10 @@ function Fireplace()
           audio.currentTime = 0;
         }
 
-        audioFadeRef.current = null;
         return;
       }
 
-      audio.volume += difference * 0.08;
+      audio.volume += difference * factor;
       audioFadeRef.current = requestAnimationFrame(fade);
     };
 
@@ -232,6 +236,7 @@ function Fireplace()
       if (audioFadeRef.current !== null)
       {
         cancelAnimationFrame(audioFadeRef.current);
+        audioFadeRef.current = null;
       }
     };
   }, [soundOn]);
@@ -243,7 +248,6 @@ function Fireplace()
         src="/react-fireplace/audio/fireplace-crackle.mp3"
         loop
         preload="auto"
-        aria-hidden="true"
       />
 
       <div className="room-ambient-light" aria-hidden="true" />
@@ -252,7 +256,7 @@ function Fireplace()
       <button
         type="button"
         className="sound-toggle"
-        onClick={() => setSoundOn((value) => !value)}
+        onClick={() => setSoundOn(value => !value)}
         aria-label={
           soundOn
           ? "Disable fireplace sound"
@@ -270,8 +274,7 @@ function Fireplace()
           ) : (
             <>
               <path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor" />
-              <path d="m17 9-5 6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-              <path d="m12 9 5 6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+              <path d="m17 9-5 6m0-6 5 6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
             </>
           )}
         </svg>
@@ -287,8 +290,8 @@ function Fireplace()
           <div className="coal-bed" aria-hidden="true" />
           <div className="logs" aria-hidden="true" />
           <div className="flame-stage" aria-hidden="true">
-            <FlameRow count={7} intensity={0.84} blur={16} zIndex={1} phase={0.6} />
-            <FlameRow count={13} intensity={0.98} blur={7} zIndex={2} phase={-1.2} />
+            <FlameRow count={7} intensity={0.84} blur={15} zIndex={1} phase={0.6} />
+            <FlameRow count={13} intensity={0.98} blur={6} zIndex={2} phase={-1.2} />
             <FlameRow count={19} intensity={1.08} blur={0} zIndex={3} phase={-2.4} />
           </div>
         </div>

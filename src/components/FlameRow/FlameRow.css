@@ -15,13 +15,14 @@
 
     width: min(94%, 1460px);
     height: 84%;
-    gap: clamp(3px, 0.52vw, 10px);
+    gap: clamp(2px, 0.38vw, 7px);
+
+    overflow: visible;
+    isolation: isolate;
+    pointer-events: none;
 
     transform: translateX(-50%);
     filter: blur(var(--row-blur));
-    pointer-events: none;
-    isolation: isolate;
-    overflow: visible;
 }
 
 /* ====================================
@@ -31,25 +32,30 @@
 {
     position: relative;
     flex: 0 0 auto;
-    width: clamp(14px, calc(20px * var(--width)), 30px);
-    height: clamp(84px, calc(142px * var(--height)), 250px);
+    width: clamp(13px, calc(21px * var(--width)), 32px);
+    height: clamp(76px, calc(142px * var(--height)), 260px);
     transform-origin: 50% 100%;
 
-    border-radius: 54% 46% 44% 38% / 88% 84% 25% 18%;
+    border-radius: 53% 47% 43% 57% / 83% 88% 17% 22%;
     background: radial-gradient(
-        ellipse 62% 78% at 50% 91%,
-        var(--flare-white) 0%,
-        var(--flame-core) 8%,
-        var(--flame-hot) 20%,
-        var(--flame-gold) 38%,
-        var(--flame-orange) 61%,
-        var(--ember-red) 83%,
+        ellipse 48% 78% at calc(50% + var(--asymmetry)) 91%,
+        rgba(255, 249, 226, 0.98) 0%,
+        rgba(255, 225, 163, 0.96) 12%,
+        rgba(255, 177, 74, 0.86) 29%,
+        rgba(255, 102, 15, 0.88) 49%,
+        rgba(255, 43, 0, 0.60) 70%,
         transparent 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(224, 51, 0, 0.0) 0%,
+      rgba(255, 100, 14, 0.80) 57%,
+      rgba(255, 174, 62, 0.96) 100%
     );
 
     filter: brightness(calc(0.88 + var(--temperature) * 0.27))
-            contrast(calc(1.02 + var(--temperature) * 0.08))
-            saturate(calc(1.02 + var(--temperature) * 0.20));
+            contrast(calc(1.04 + var(--temperature) * 0.08))
+            saturate(calc(1.04 + var(--temperature) * 0.20));
     opacity: calc(0.48 * var(--temperature) * var(--row-intensity));
 
     mix-blend-mode: screen;
@@ -67,20 +73,19 @@
 {
   content: "";
   position: absolute;
-  inset: 4% 6% 7%;
-  transform: translateX(-2%) scale(calc(0.76 + var(--core) * 0.15));
-
+  inset: 5% 12% 7%;
   border-radius: inherit;
   background: radial-gradient(
     ellipse 54% 66% at 50% 90%,
-    rgba(255, 246, 218, 0.99) 0%,
-    rgba(255, 232, 177, 0.94) 15%,
-    rgba(255, 195, 96, 0.42) 38%,
-    transparent 73%
+    rgba(255, 252, 237, 0.98) 0%,
+    rgba(255, 239, 198, 0.94) 15%,
+    rgba(255, 210, 129, 0.72) 31%,
+    rgba(255, 166, 67, 0.28) 52%,
+    transparent 75%
   );
 
-  filter: blur(calc(2.5px + var(--row-blur) * 0.32));
-  opacity: calc(0.44 + var(--temperature) * 0.34);
+  filter: blur(calc(2px + var(--row-blur) * 0.24));
+  opacity: calc(0.42 + var(--temperature) * 0.35);
   mix-blend-mode: screen;
   pointer-events: none;
 
@@ -89,18 +94,24 @@
 }
 
 /* ====================================
-   FLAMEROW OUTER FLAME STYLES.
+   FLAMEROW OUTER FLAME HALO STYLES.
 ======================================= */
 .flame::after
 {
   content: "";
   position: absolute;
-  inset: -40% -95% -20%;
+  inset: -35% -85% -18%;
   border-radius: 50%;
 
-  background: radial-gradient(ellipse at center, rgba(255, 224, 156, 0.14) 0%, rgba(255, 136, 423 0.18) 28%, transparent 70%);
-  filter: blur(calc(17px + var(--row-blur) * 0.65));
-  opacity: calc(0.10 + var(--temperature) * 0.17);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 224, 156, 0.14) 0%,
+    rgba(255, 136, 42, 0.13) 30%,
+    rgba(255, 74, 12, 0.055) 52%,
+    transparent 72%
+  );
+  filter: blur(calc(16px + var(--row-blur) * 0.55));
+  opacity: calc(0.10 + var(--temperature) * 0.15);
   mix-blend-mode: screen;
   pointer-events: none;
 }
@@ -113,16 +124,16 @@
         transform:
           translate3d(0, 0, 0)
           rotate(0deg)
-          scaleX(calc(0.88 + var(--scale) * 0.06))
-          scaleY(calc(0.94 + var(--scale) * 0.06));
+          scaleX(calc(0.86 + var(--scale) * 0.07))
+          scaleY(calc(0.94 + var(--scale) * 0.05));
     }
     20%
     {
         transform:
-          translate3d(calc(var(--sway) * var(--turbulence) * 0.28), calc(var(--lift) * -0.26), 0)
+          translate3d(calc(var(--sway) * var(--turbulence) * 0.28), calc(var(--lift) * -0.24), 0)
           rotate(calc(var(--lean) * 0.48))
-          scaleX(calc(0.84 + var(--scale) * 0.07))
-          scaleY(calc(1.02 + var(--scale) * 0.08));
+          scaleX(calc(0.82 + var(--scale) * 0.08))
+          scaleY(calc(1.02 + var(--scale) * 0.07));
     }
     46%
     {
@@ -130,7 +141,7 @@
         translate3d(calc(var(--sway) * var(--turbulence)), calc(var(--lift) * -0.82), 0)
         rotate(var(--lean))
         scaleX(calc(0.68 + var(--scale) * 0.08))
-        scaleY(calc(1.07 + var(--turbulence) * 0.08));
+        scaleY(calc(1.06 + var(--turbulence) * 0.07));
     }
     68%
     {
@@ -138,14 +149,14 @@
         translate3d(calc(var(--sway) * -0.72), calc(var(--lift) * -0.46), 0)
         rotate(calc(var(--lean) * -0.82))
         scaleX(calc(0.80 + var(--scale) * 0.06))
-        scaleY(calc(0.99 - var(--turbulence) * 0.025));
+        scaleY(calc(0.98 - var(--turbulence) * 0.025));
     }
 }
 
 @keyframes flame-core
 {
   0%, 100% { transform: translate3d(-2%, 0, 0) scale(calc(0.78 + var(--core) * 0.10)); opacity: calc(0.44 + var(--temperature) * 0.24); }
-  43% { transform: translate3d(calc(var(--sway) * 0.12), -7%, 0) scale(calc(0.91 + var(--core) * 0.12)); opacity: calc(0.52 + var(--temperature) * 0.28); }
+  43% { transform: translate3d(calc(var(--sway) * 0.12), -7%, 0) scale(calc(0.91 + var(--core) * 0.12)); opacity: calc(0.52 + var(--temperature) * 0.25); }
   74% { transform: translate3d(calc(var(--sway) * -0.08), -3%, 0) scale(calc(0.82 + var(--core) * 0.10));  }
 }
 

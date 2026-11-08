@@ -8,13 +8,13 @@
     position: absolute;
     left: 50%;
     bottom: 4%;
+    z-index: 6;
 
     width: min(88%, 1300px);
     height: min(450px, 78%);
     transform: translateX(-50%);
 
     pointer-events: none;
-    z-index: 6;
     overflow: visible;
     isolation: isolate;
 }
@@ -36,22 +36,22 @@
     background: radial-gradient(
         circle,
         var(--flare-white) 0%,
-        var(--flame-hot) 12%,
-        var(--flame-gold) 32%,
-        var(--flame-orange) 56%,
-        var(--ember-red) 80%,
+        var(--flame-hot) 14%,
+        var(--flame-gold) 34%,
+        var(--flame-orange) 58%,
+        var(--ember-red) 82%,
         transparent 100%
     );
     mix-blend-mode: screen;
 
-    filter: blur(calc((1 - var(--depth)) * 4px))
+    filter: blur(calc((1 - var(--depth)) * 3px))
             brightness(calc(0.84 + var(--temperature) * 0.25))
             contrast(calc(1.02 + var(--temperature) * 0.10))
             saturate(calc(1.05 + var(--temperature) * 0.22));
-    opacity: calc(var(--temperature) * var(--cooling) * var(--fire-energy) * 0.86);
+    opacity: calc(var(--temperature) * var(--cooling) * var(--fire-energy) * 0.82);
     mix-blend-mode: screen;
     backface-visibility: hidden;
-    will-change: transform, opacity, filter;
+    will-change: transform, opacity;
 
     animation: ember-rise var(--duration) var(--ease-fire) infinite;
     animation-delay: var(--delay);
@@ -64,19 +64,19 @@
 {
     content: "";
     position: absolute;
-    inset: calc(var(--size) * -2.8);
+    inset: -280%;
 
     border-radius: 50%;
     background: radial-gradient(
         circle,
         rgba(255, 235, 185, 0.16) 0%,
-        rgba(255, 153, 55, 0.18) 28%,
-        rgba(255, 94, 20, 0.08) 52%,
+        rgba(255, 153, 55, 0.14) 25%,
+        rgba(255, 94, 20, 0.06) 48%,
         transparent 72%
     );
 
     filter: blur(4px);
-    opacity: calc(var(--glow) * var(--temperature) * 0.74);
+    opacity: calc(var(--glow) * var(--temperature) * 0.70);
     pointer-events: none;
 }
 
